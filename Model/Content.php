@@ -137,7 +137,7 @@ class Content
     protected $contentChanged;
 
     /**
-     * @ORM\OneToOne(targetEntity="Seo", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="APP\CmsBundle\Entity\Seo", cascade={"persist", "remove"})
      * @Assert\Valid()
      */
     protected $seo;
