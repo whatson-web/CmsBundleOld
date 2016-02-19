@@ -2,6 +2,7 @@
 
 namespace WH\CmsBundle\Model;
 use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 use Doctrine\ORM\EntityRepository;
 
@@ -13,6 +14,18 @@ use Doctrine\ORM\EntityRepository;
  */
 class PageRepository extends NestedTreeRepository
 {
+
+    public function getQuery()
+    {
+
+        return $this
+            ->createQueryBuilder('Page')
+            ->leftJoin('Page.template', 'Template')
+            ->leftJoin('Page.parent', 'Parent')
+            ->orderBy('Page.lft', 'asc')
+            ;
+
+    }
 
 
     public function findForMenu($search = array()) {
@@ -60,7 +73,6 @@ class PageRepository extends NestedTreeRepository
 
 
         return $res->getResult();
-
 
 
 
@@ -147,76 +159,142 @@ class PageRepository extends NestedTreeRepository
 
     }
 
-    public function get($all = true, $options = array())
+    /**
+     * @param string $type
+     * @param array $options
+     * @param bool $admin
+     * @return bool|\Doctrine\ORM\Query|Paginator
+     */
+    public function get($type = 'all', $options = array(), $admin = false)
     {
 
-        $qb = $this
-            ->createQueryBuilder('page')
-            ->select('page')
-            ->where('page.status = :status')
-            ->orderBy('page.root, page.lft', 'ASC')
-            ->setParameter('status', 'published');
-        ;
+        $qb = $this->getQuery();
 
-        foreach ($options as $key => $value)
-        {
+        if (!$admin) {
 
-            switch($key)
-            {
+            $qb->andWhere('Page.status = :status');
+            $qb->setParameter('status', 'published');
+        }
+
+
+        foreach ($options as $key => $value) {
+
+            switch ($key) {
+
+                case 'limit':
+                    $qb->setMaxResults($value);
+                    break;
+
+                case 'order':
+                    $qb->orderBy('Page.created', $value);
+                    break;
+
 
                 case 'template':
-                    $qb->andWhere('Template.slug = :templateSlug');
-                    $qb->setParameter('templateSlug', $value);
-                    break;
-
-                case 'parent':
-                    $qb->andWhere('page.parent = :parentPageId');
-                    $qb->setParameter('parentPageId', $value);
-                    break;
-
-                case 'rubrique' :
-
-                    $qb->innerJoin('page.Template', 'template', 'WITH', 'page.Template = template.id');
-                    $qb->andWhere('template.slug = :templateSlug');
-                    $qb->setParameter('templateSlug', 'rubrique');
-                    $qb->andWhere('page.lft > :lft');
-                    $qb->andWhere('page.rgt < :rgt');
-                    $qb->setParameter('lft', $value->getLft());
-                    $qb->setParameter('rgt', $value->getRgt());
+                    $qb->andWhere('Page.template = :template');
+                    $qb->setParameter('template', $value);
 
                     break;
 
-                case 'sousRubrique' :
+                case 'conditions':
 
-                    $qb->innerJoin('page.Template', 'template', 'WITH', 'page.Template = template.id');
-                    $qb->andWhere('template.slug = :templateSlug');
-                    $qb->setParameter('templateSlug', 'rubrique');
-                    $qb->andWhere('page.parent = :parent');
-                    $qb->setParameter('parent', $value->getId());
+                    foreach($value as $k => $v) {
 
-                    break;
+                        if(empty($v)) continue;
 
-                case 'categoryCode':
-                    $qb->andWhere('page.categoryCode = :categoryCode');
-                    $qb->setParameter('categoryCode', $value);
-                    break;
+                        switch($k) {
+
+                            case 'Search' :
+
+                                $qb->orWhere('Page.body LIKE :search');
+                                $qb->orWhere('Page.name LIKE :search');
+                                $qb->orWhere('Page.title LIKE :search');
+                                $qb->setParameter('search', '%'.$v.'%');
+
+                                break;
+
+
+                            default :
+
+                                $cond = preg_replace('#\.#', '', $k);
+                                $cond = strtolower($cond);
+
+
+                                $qb->andWhere($k. ' = :'.$cond);
+                                $qb->setParameter($cond, $v);
+
+                                break;
+
+
+                        }
+
+
+
+                    }
+
+
+
 
             }
 
         }
 
-        $query = $qb->getQuery();
 
-        if ($all) {
+        switch ($type) {
 
-            $result = $query->getResult();
+            case 'query':
 
-        } else {
+                return $qb;
 
-            $result = $query->getOneOrNullResult();
+                break;
+
+            case 'all':
+
+                $qb->addSelect('Page')
+                    ->addSelect('Template')
+                    ->addSelect('Parent')
+                    ->getQuery();
+
+                return $qb->getResult();
+
+                break;
+
+            case 'one':
+
+                $qb->addSelect('Page')
+                    ->addSelect('Template')
+                    ->addSelect('Parent')
+                    ->getQuery();
+
+                return $qb->getOneOrNullResult();
+
+                break;
+
+            case 'paginate':
+
+
+                $qb->addSelect('Page')
+                    ->addSelect('Template')
+                    ->addSelect('Parent')
+                    ->getQuery();
+
+                if (!empty($typeOptions['page'])) {
+
+                    $qb->setFirstResult(($typeOptions['page'] - 1) * $typeOptions['limit']);
+                }
+
+                if (!empty($typeOptions['limit'])) {
+
+                    $qb->setMaxResults($typeOptions['limit']);
+                }
+
+                return new Paginator($qb, true);
+
+                break;
+
         }
 
-        return $result;
+        return false;
 
     }
 

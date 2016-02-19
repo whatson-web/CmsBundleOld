@@ -11,26 +11,55 @@ class LoadTemplate implements FixtureInterface
     {
         // Les noms d'utilisateurs à créer
         $listNames = array(
-            'page'      => 'Page normale',
-            'rubrique'  => 'Rubrique de catalogue',
-            'blog'      => 'Catégorie d’actu',
             'home'      => 'Accueil',
+            'page'      => 'Page normale',
+            'mentions'   => array(
+                'type'              => 'page',
+                'name'              => 'Page mentions légales',
+                'tplt'              => ''
+            ),
+
             'contact'   => array(
+                'type'              => 'page',
                 'name'              => 'Page contact',
                 'adminController'   => 'WHCmsBundle:Backend/Contact',
                 'controller'        => 'WHCmsBundle:Contact'
             ),
-            'mentions'  => 'Mentions légales',
+            'post'   => array(
+                'type'              => 'post',
+                'name'              => 'News'
+            ),
+            'work'   => array(
+                'type'              => 'post',
+                'name'              => 'réalisation'
+            )
+
         );
 
         foreach ($listNames as $k => $name) {
-            // On crée l'utilisateur
-            $Tpl = new Template;
 
-            // Le nom d'utilisateur et le mot de passe sont identiques
-            $Tpl->setName($name);
+            $Tpl = new Template();
+
+            $Tpl->setType('page');
             $Tpl->setSlug($k);
-	        $Tpl->setType('page');
+
+            if(is_array($name)) {
+
+                $Tpl->setName($name['name']);
+                $Tpl->setSlug($k);
+
+                if(!empty($name['controller'])) $Tpl->setController($name['controller']);
+                if(!empty($name['adminController'])) $Tpl->setAdminController($name['adminController']);
+                if(!empty($name['name'])) $Tpl->setTplt($name['name']);
+                if(!empty($name['type'])) $Tpl->setType($name['type']);
+
+            }else{
+
+                $Tpl->setName($name);
+
+            }
+
+
 
             // On le persiste
             $manager->persist($Tpl);

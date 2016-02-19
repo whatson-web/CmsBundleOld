@@ -26,7 +26,6 @@ class TemplateType extends AbstractType
             ->add('tplt', 'text', array('label' => 'Vue : ', 'required' => false))
             ->add('controller', 'text', array('label' => 'Controller : ', 'required' => false))
             ->add('adminController', 'text', array('label' => 'Controller Admin : ', 'required' => false))
-            ->add('req', 'textarea', array('label' => 'Requette : ', 'required' => false))
             ->add('Type', 'choice', array(
                     'label' => 'Type : ',
                     'choices' => Template::getBlocTypesChoices()
