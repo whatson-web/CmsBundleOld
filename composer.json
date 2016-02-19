@@ -25,6 +25,6 @@
             "WH\\CmsBundle": ""
         }
     },
-    "target-dir": "",
+    "target-dir": "WH/CmsBundle",
     "minimum-stability": "dev"
 }
