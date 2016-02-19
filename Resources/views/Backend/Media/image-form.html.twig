@@ -1,0 +1,17 @@
+<div class="form-group">
+<label for="">url : </label>
+<div class="input-group">
+    {{ form_widget(form.url, {'attr' : {'class' : 'form-control'}}) }}
+    <div class="input-group-btn">
+        <button class="btn btn-default btn-open" type="button" id="btn_wh_cmsbundle_page_thumb_url"><i class="fa fa-folder-open"></i></button>
+        <button class="btn btn-danger btn-delete" type="button"><i class="fa fa-remove"></i></button>
+    </div>
+</div>
+</div>
+
+{{ form_row(form.url) }}
+<div class="row">
+    <div class="col-md-6">{{ form_row(form.alt) }}</div>
+    <div class="col-md-6">{{ form_row(form.title) }}</div>
+</div>
+{{ form_row(form.description) }}

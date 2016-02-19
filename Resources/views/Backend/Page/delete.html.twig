@@ -1,0 +1,33 @@
+{% extends "WHAdminBundle::popup.html.twig" %}
+
+{% form_theme form 'WHAdminBundle:Form:bootstrap.html.twig' %}
+
+{% block title %} Supprimer {% endblock %}
+
+{% block body %}
+
+{{ form_start(form) }}
+
+<div class="padded">
+
+    Etes vous sûre de vouloir supprimer cette page ?
+
+    <h3>" {{ Page.name }} " ? </h3>
+</div>
+
+<div class="modal-footer">
+
+    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">
+        Annuler
+    </button>
+
+    <button type="submit" class="btn btn-danger">
+        Supprimer
+    </button>
+
+</div>
+
+{{ form_end(form) }}
+
+
+{% endblock %}

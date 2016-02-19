@@ -1,0 +1,17 @@
+{% extends "WHCmsBundle:Backend:main.html.twig" %}
+
+{% block ariane %}{{ parent() }}<li><a href="{{ path('wh_admin_cms_medias') }}">Medias</a></li>{% endblock %}
+{% block subtitle %}Medias{% endblock %}
+
+{% block content %}
+
+    <iframe src="{{ path('elfinder', {'instance' : type}) }}" frameborder="0" style="padding:0;margin:0;border:none;width:100%;height:900px;"></iframe>
+
+{% endblock %}
+
+{% block javascript %}
+
+    {{ parent() }}
+
+
+{% endblock %}

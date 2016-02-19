@@ -1,0 +1,35 @@
+{% extends "WHSmartAdminBundle::popup.html.twig" %}
+
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+
+{% block title %} Créer {% endblock %}
+
+{% block body %}
+
+    {{ form_start(form, {'action': path('wh_admin_cms_page_create', {'template' : template.id}), 'method': 'POST'}) }}
+
+    <div class="padded">
+
+        {{ form_row(form.name) }}
+        {{ form_row(form.parent) }}
+        {{ form_row(form.Menus) }}
+
+    </div>
+
+    <div class="modal-footer">
+
+        <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">
+            Annuler
+        </button>
+
+
+        {{ form_widget(form.editer) }}
+        {{ form_widget(form.new) }}
+
+    </div>
+
+    {{ form_end(form) }}
+
+    {{ Smart.modalSubmitAjax() }}
+
+{% endblock %}

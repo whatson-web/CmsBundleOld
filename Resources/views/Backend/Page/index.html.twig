@@ -1,0 +1,166 @@
+{% extends "WHCmsBundle:Backend:main.html.twig" %}
+
+{% block ariane %}{{ parent() }}{% endblock %}
+
+{% block title_right %}
+
+    <div class="btn-group pull-right">
+        <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-plus-square fa-lg"></i> Nouvelle Page
+        </button>
+        <ul class="dropdown-menu">
+            {% for template in templates %}
+                <li>
+                    <a href="{{ path('wh_admin_cms_page_create', {'template' : template.id }) }}" {{ Smart.modal() }} >{{ template.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+
+    <div class="col-md-4">
+
+        {{ Smart.openBox('fa-sitemap', 'Plan du site') }}
+
+            <div class="widget-body">
+
+                {{ render(controller('WHCmsBundle:Backend/Page:Menu')) }}
+
+            </div>
+
+        {{ Smart.closeBox() }}
+
+        [ <a href="{{ path('wh_admin_cms_page_treerecover') }}" style="clear: both">Maintenance - Ne pas toucher</a> ]
+
+    </div>
+
+    <div class="col-md-8">
+
+        {{ Smart.openTable('fa-list', path) }}
+
+            <thead>
+
+                <tr>
+                    <th style="width: 80px;" ></th>
+                    <th>id</th>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Meta title</th>
+                    <th>Date de modification</th>
+                    <th>Stats</th>
+                    <th></th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for child in children %}
+
+                    <tr class="{% if child.status == 'draft' %}danger{% endif %}">
+                        <td>
+                            <a href="{{ path('wh_admin_cms_page_update', {'page' : child.id}) }}" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i></a>
+                            {% if child.children | length == 0 %}
+                                <a href="{{ path('wh_admin_cms_page_delete', { 'page': child.id }) }}" class="btn btn-xs btn-danger" {{ Smart.confirm('Etes-vous sûr de vouloir supprimer cette page ? ') }}><i class="fa fa-trash-o"></i></a>
+                            {% endif %}
+                        </td>
+                        <td>{{ child.id }}</td>
+                        <td>
+                            {{ child.name }}<br/>
+                            <small class="text-muted">Titre : <i>{{ child.title }}</i></small>
+                            <br/>
+                            <small class="text-muted">Url : <i><a href="{{ path('wh_admin_cms_page_publish', {'page' : child.id}) }}" target="_blank">{{ child.url }}</a></i></small>
+                        </td>
+                        <td>{% if child.Template %}{{ child.Template.name }}{% endif %}</td>
+                        <td>
+                            {% if child.Seo %}
+                                {% if child.Seo.title | length > 80 %}
+                                    <small><i class="txt-color-orange">{{ child.Seo.title }}</i></small>
+                                {% elseif child.Seo.title | length == 0 %}
+                                    <i class="txt-color-red">Attention pas de title</i></small>
+                                {% else %}
+                                    <small><i class="txt-color-green">{{ child.Seo.title }}</i></small>
+                                {% endif %}
+                            {% else %}
+                                <small><i class="txt-color-red">Attention pas de title</i></small>
+                            {% endif %}
+                        </td>
+                        <td>{{ child.updated | date('d/m/Y') }}</td>
+                        <td></td>
+                        <td>
+                            {% if (child.root != child.id) and (children|length > 1)  %}
+
+                                {% if not loop.first %}
+                                    <a href="{{ path('wh_admin_cms_page_order', {'page' : child.id, 'position' : 'up'}) }}" class="btn btn-info btn-xs"><i class="fa fa-angle-up"></i></a>
+                                {% endif %}
+                                {% if not loop.last %}
+                                    <a href="{{ path('wh_admin_cms_page_order', {'page' : child.id, 'position' : 'down'}) }}" class="btn btn-info btn-xs"><i class="fa fa-angle-down"></i></a>
+                                {% endif %}
+
+                            {% endif %}
+                        </td>
+                    </tr>
+
+
+
+                {% endfor %}
+
+            </tbody>
+
+        {{ Smart.closeTable() }}
+
+        {% if children.Products is defined %}
+
+            {{ Smart.openTable('fa fa-list') }}
+
+                <thead>
+
+                    <tr>
+                        <th></th>
+                        <th>Référence</th>
+                        <th>Nom</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for entity in children.Products %}
+
+                        <tr class="{% if entity.status != 'publish' %}danger{% endif %}">
+                            <td>
+                                <a href="{{ path('whad_cat_product_update', { 'Product': entity.id }) }}" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
+                                <a href="{{ path('whad_cat_product_delete', { 'Product': entity.id }) }}" class="btn btn-xs btn-danger"  {{ Smart.modal('sm') }}><i class="fa fa-trash-o"></i></a>
+                                {% if entity.status == 'publish' %}
+                                    <a href="{{ path('whad_cat_product_publish', { 'Product': entity.id }) }}" class="btn btn-xs btn-success"><i class="fa fa-thumbs-o-up"></i></a>
+                                {% else %}
+                                    <a href="{{ path('whad_cat_product_publish', { 'Product': entity.id }) }}" class="btn btn-xs btn-danger"><i class="fa fa-thumbs-o-down"></i></a>
+                                {% endif %}
+                            </td>
+                            <td>{{ entity.name }}</td>
+                            <td>{{ entity.reference }}</td>
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            {{ Smart.closeTable() }}
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    {{ Smart.modalSuccess() }}
+{% endblock %}

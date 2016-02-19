@@ -1,0 +1,50 @@
+{% extends "WHCmsBundle:Backend:main.html.twig" %}
+
+{% block ariane %}{{ parent() }}<li><a href="{{ path('wh_admin_cms_menus') }}">Menus</a></li>{% endblock %}
+{% block subtitle %}Menus{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="well">
+
+            <h1>Gestion des menus</h1>
+
+            <p></p>
+
+        </div>
+
+
+        {{ Smart.openTable(null, null, '<a href="'~ path('wh_admin_cms_menu_create') ~'" class="btn btn-success">Nouveau</a>') }}
+
+            <thead>
+            <tr>
+                <th class="col-md-1"></th>
+                <th>Nom </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr class="">
+                    <td>
+                        <a href="{{ path('wh_admin_cms_menu_update', { 'Menu': entity.id }) }}" class="btn btn-xs btn-primary" {{ Smart.modal() }}><i class="fa fa-edit"></i></a>
+                        <a href="{{ path('wh_admin_cms_menu_delete', { 'Menu': entity.id }) }}" class="btn btn-xs btn-danger" {{ Smart.confirm('Etes vous sûre de vouloir supprimer ce menu ? ') }}><i class="fa fa-trash-o"></i></a>
+                    </td>
+                    <td>{{ entity.name }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+        {{ Smart.closeTable() }}
+
+    </div>
+
+
+{% endblock %}
+
+
+{% block javascript %}
+    {{ parent() }}
+    {{ Smart.modalSuccess() }}
+{% endblock %}

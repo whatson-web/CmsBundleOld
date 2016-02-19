@@ -1,0 +1,62 @@
+{% extends "WHCmsBundle:Backend:main.html.twig" %}
+
+{% block ariane %}{{ parent() }}<li><a href="{{ path('wh_admin_cms_templates') }}">Templates</a></li>{% endblock %}
+{% block subtitle %}Templates{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="well">
+
+            <h1>Gestion des templates</h1>
+
+            <p>Les templates permettent de créer des actions et / ou des mises en page spécifiques
+
+            </p>
+
+        </div>
+
+
+        {{ Smart.openTable(null, null, '<a href="'~ path('wh_admin_cms_template_create') ~'" class="btn btn-success" '~ Smart.modal() ~' >Nouveau</a>') }}
+
+            <thead>
+            <tr>
+                <th class="col-md-1"></th>
+                <th>Nom </th>
+                <th>Type </th>
+                <th>Slug </th>
+                <th>Vue </th>
+                <th>Controller </th>
+                <th>Controller Admin</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entity in entities %}
+                <tr class="">
+                    <td>
+                        <a href="{{ path('wh_admin_cms_template_update', { 'Template': entity.id }) }}" class="btn btn-xs btn-primary" {{ Smart.modal() }}><i class="fa fa-edit"></i></a>
+                        <a href="{{ path('wh_admin_cms_template_delete', { 'Template': entity.id }) }}" class="btn btn-xs btn-danger" {{ Smart.confirm('Etes vous sûre de vouloir supprimer ce template ? ') }}><i class="fa fa-trash-o"></i></a>
+                    </td>
+                    <td>{{ entity.name }}</td>
+                    <td>{{ entity.type }}</td>
+                    <td>{{ entity.slug }}</td>
+                    <td>{{ entity.tplt }}</td>
+                    <td>{{ entity.controller }}</td>
+                    <td>{{ entity.adminController }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+        {{ Smart.closeTable() }}
+
+    </div>
+
+
+{% endblock %}
+
+
+{% block javascript %}
+    {{ parent() }}
+    {{ Smart.modalSuccess() }}
+{% endblock %}

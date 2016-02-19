@@ -1,0 +1,20 @@
+{% extends "WHSmartAdminBundle::popup.html.twig" %}
+
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+
+{% block title %} Créer {% endblock %}
+
+{% block body %}
+
+    {{ form_start(form, {'action': path('wh_admin_cms_menu_create'), 'method': 'POST'}) }}
+
+    {{ include('WHCmsBundle:Backend:Menu/form.html.twig') }}
+
+    {{ Smart.modalSubmitBtn(form) }}
+
+    {{ form_end(form) }}
+
+    {{ Smart.modalSubmitAjax() }}
+
+{% endblock %}
+
