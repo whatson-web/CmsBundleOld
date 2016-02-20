@@ -20,7 +20,7 @@ class Template
      */
 	static protected $blocTypes = array(
 		'page'       => 'Template page',
-        'article'    => 'Template article',
+        'post'       => 'Template post',
 		'bloc'       => 'Template bloc'
 	);
 
@@ -62,13 +62,6 @@ class Template
 	 */
 	protected $controller;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="req", type="string", length=255, nullable=true)
-     */
-    protected $req;
-
 	/**
 	 * @var string
 	 *
@@ -81,7 +74,7 @@ class Template
      *
      * @ORM\Column(name="type", type="string", length=255)
      */
-    protected $Type;
+    protected $type;
 
 
     /**
@@ -178,7 +171,7 @@ class Template
      */
     public function setType($type)
     {
-        $this->Type = $type;
+        $this->type = $type;
 
         return $this;
     }
@@ -190,7 +183,7 @@ class Template
      */
     public function getType()
     {
-        return $this->Type;
+        return $this->type;
     }
 
     /**
