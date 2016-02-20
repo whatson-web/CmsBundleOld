@@ -74,7 +74,7 @@
                             {{ child.name }}<br/>
                             <small class="text-muted">Titre : <i>{{ child.title }}</i></small>
                             <br/>
-                            <small class="text-muted">Url : <i><a href="{{ path('wh_admin_cms_page_publish', {'page' : child.id}) }}" target="_blank">{{ child.url }}</a></i></small>
+                            <small class="text-muted">Url : {% if child.url is not empty %}<i><a href="{{ path('wh_front_cms_page', {'url' : child.url}) }}" target="_blank">url : {{ child.url }}</a></i></small>{% endif %}
                         </td>
                         <td>{% if child.Template %}{{ child.Template.name }}{% endif %}</td>
                         <td>

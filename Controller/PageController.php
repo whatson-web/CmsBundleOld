@@ -6,25 +6,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 /**
- * @Route("/admin/page")
+ * @Route("/")
  */
 class PageController extends Controller
 {
 
 	/**
 	 * @param string $url
-     * @Route("/{url}", name="wh_front_cms_page")
+     * @Route("/{url}", name="wh_front_cms_page", requirements={"url" = ".*"})
 	 * @return \Symfony\Component\HttpFoundation\Response
 	 * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
 	 */
-	public function viewAction($url = '')
+	public function viewAction($url)
     {
 
         $tab = array();
 
         $em = $this->getDoctrine()->getManager();
 
-        $repo = $em->getRepository('WHCmsBundle:Page');
+        $repo = $em->getRepository('APPCmsBundle:Page');
 
         $Page = $repo->findOneByUrl($url);
 
@@ -52,15 +52,15 @@ class PageController extends Controller
         $tab['path'] = $path;
 
         //Template :
-        $Tpl = $Page->getTemplate()->getSlug();
+        $Tpl = $Page->getTemplate()->getTplt();
 
-        if ( $this->get('templating')->exists('WHCmsBundle:Page:public/'.$Tpl.'.html.twig') ) {
+        if ( $this->get('templating')->exists($Tpl) ) {
 
-            return $this->render('WHCmsBundle:Page:public/'.$Tpl.'.html.twig', $tab);
+            return $this->render($Tpl, $tab);
 
         }else{
 
-            return $this->render('WHCmsBundle:Page:public/page.html.twig', $tab);
+            return $this->render('APPMainBundle:Frontend:Page/index.html.twig', $tab);
 
         }
 
