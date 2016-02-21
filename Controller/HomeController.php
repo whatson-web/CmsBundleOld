@@ -21,10 +21,10 @@ class HomeController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $Home = $em->getRepository('APPCmsBundle:Page')->get('one', array('conditions' => array('Template.slug' => 'home')));
+        $Page = $em->getRepository('APPCmsBundle:Page')->get('one', array('conditions' => array('Template.slug' => 'home')));
 
-        return $this->render('APPMainBundle:Frontend:Home/index.html.twig', array(
-                'Home' => $Home
+        return $this->render('WHCmsBundle:Home:index.html.twig', array(
+                'Page' => $Page
 
             ));
 

@@ -32,7 +32,13 @@ class LoadTemplate implements FixtureInterface
             'work'   => array(
                 'type'              => 'post',
                 'name'              => 'réalisation'
-            )
+            ),
+            'bloc-blog'   => array(
+                'type'              => 'bloc',
+                'name'              => 'Bloc blog',
+                'controllerAdmin'   => 'WHBlogBundle:Backend/Post',
+                'controller'        => 'WHBlogBundle:Bloc:view'
+            ),
 
         );
 

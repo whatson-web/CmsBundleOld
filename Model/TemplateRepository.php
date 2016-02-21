@@ -43,12 +43,6 @@ class TemplateRepository extends EntityRepository
                     break;
 
 
-                case 'type':
-                    $qb->andWhere('template.type = :type');
-                    $qb->setParameter('type', $value);
-
-                    break;
-
                 case 'conditions':
 
                     foreach($value as $k => $v) {
@@ -101,9 +95,7 @@ class TemplateRepository extends EntityRepository
 
             case 'all':
 
-                $qb->getQuery();
-
-                return $qb->getResult();
+                return $qb->getQuery()->getResult();
 
                 break;
 

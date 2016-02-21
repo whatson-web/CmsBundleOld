@@ -18,14 +18,6 @@ use WH\CmsBundle\Model\Content as WHCmsContent;
 abstract class Page extends WHCmsContent
 {
 
-    /**
-     * Status de page
-     * @var array
-     */
-    static protected $statusChoice = array(
-        'published' => 'Publié',
-        'draft'     => 'Brouillon'
-    );
 
     /**
      * @ORM\Column(name="id", type="integer")
@@ -53,6 +45,11 @@ abstract class Page extends WHCmsContent
      * @ORM\Column(name="url_rewrite", type="string", length=255, nullable=true)
      */
     protected $url_rewrite;
+
+    /**
+     * @ORM\OneToMany(targetEntity="WH\CmsBundle\Entity\PageBloc", mappedBy="page", cascade={"persist", "remove"})
+     */
+    protected $pageBlocs;
 
 
     /****************************************
@@ -113,8 +110,9 @@ abstract class Page extends WHCmsContent
     {
         parent::__construct();
 
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->Menus    = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->children  = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->menus     = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->pageBlocs = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
 
@@ -414,4 +412,45 @@ abstract class Page extends WHCmsContent
     {
         return $this->parent;
     }
+
+
+
+    /**
+     * Add pageBlocs
+     *
+     * @param \WH\CmsBundle\Entity\PageBloc $pageBlocs
+     * @return Page
+     */
+    public function addPageBloc(\WH\CmsBundle\Entity\PageBloc $pageBlocs)
+    {
+        $this->pageBlocs[] = $pageBlocs;
+
+        $pageBlocs->setPage($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove pageBlocs
+     *
+     * @param \WH\CmsBundle\Entity\PageBloc $pageBlocs
+     */
+    public function removePageBloc(\WH\CmsBundle\Entity\PageBloc $pageBlocs)
+    {
+        $this->pageBlocs->removeElement($pageBlocs);
+
+        $pageBlocs->setPage(null);
+    }
+
+    /**
+     * Get pageBlocs
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPageBlocs()
+    {
+        return $this->pageBlocs;
+    }
+
+
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace WH\CmsBundle\Form;
+namespace WH\CmsBundle\Form\Backend;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class FileLittleType extends AbstractType
+class BlocType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -15,7 +15,10 @@ class FileLittleType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('url', 'elfinder', array('instance' => 'default', 'enable'=>true, 'required' => false, 'label' => false))
+            ->add('name', 'text', array('label' => 'Nom : '))
+            ->add('slug', 'text', array('label' => 'Nom technique : '))
+            ->add('view', 'text', array('label' => 'Nom de la vue : '))
+            ->add('description', 'textarea', array('label' => 'Description : '))
         ;
     }
     
@@ -25,7 +28,7 @@ class FileLittleType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'APP\CmsBundle\Entity\File'
+            'data_class' => 'WH\CmsBundle\Entity\Bloc'
         ));
     }
 
@@ -34,6 +37,6 @@ class FileLittleType extends AbstractType
      */
     public function getName()
     {
-        return 'wh_cmsbundle_file_little';
+        return 'wh_cmsbundle_bloc';
     }
 }

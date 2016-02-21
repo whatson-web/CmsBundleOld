@@ -60,7 +60,7 @@ class PageController extends Controller
 
         }else{
 
-            return $this->render('APPMainBundle:Frontend:Page/index.html.twig', $tab);
+            return $this->render('WHCmsBundle:Page:index.html.twig', $tab);
 
         }
 

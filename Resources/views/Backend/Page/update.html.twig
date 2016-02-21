@@ -62,6 +62,27 @@
 
                                     </fieldset>
 
+                                    <fieldset>
+
+
+                                        <legend>
+                                            <a href="#" class="btn btn-success btn-xs pull-right" id="btnAddBlocForm"><i class="fa fa-plus"> Ajouter</i></a>
+                                            Blocs
+                                        </legend>
+
+                                        <div data-prototype="{% filter escape %}{{ include('WHCmsBundle:Backend:Bloc/page.html.twig', { 'form': form.pageBlocs.vars.prototype }) }}{% endfilter %}" id="blocsForm">
+
+                                            {% for bloc in form.pageBlocs %}
+                                                {{ include('WHCmsBundle:Backend:Bloc/page.html.twig', { 'form': bloc }) }}
+                                            {% endfor %}
+                                            {% do form.pageBlocs.setRendered %}
+
+                                        </div>
+
+
+                                    </fieldset>
+
+
                                 </div>
 
                                 <div class="tab-pane" id="folioSeo">
@@ -140,6 +161,8 @@
 
         </div>
 
+    {% do form.slugReplace.setRendered %}
+
     {{ form_end(form) }}
 
 {% endblock %}
@@ -156,11 +179,11 @@
 
         $(document).ready(function() {
 
-            addEl($('.blocs-container'), $('#btn-add-bloc'), 'BlocNum');
+            addEl($('#blocsForm'), $('#btnAddBlocForm'), 'BlocNum');
 
             $(function() {
 
-                $('.blocs-container').sortable({
+                $('#blocsForm').sortable({
                     start: function(event, ui) {
                         var start_pos = ui.item.index();
                         ui.item.data('start_pos', start_pos);
@@ -176,10 +199,10 @@
                     },
                     update: function(event, ui) {
 
-                        $('.blocs-container .bloc').removeClass('highlights');
+                        $('#blocsForm .bloc').removeClass('highlights');
 
 
-                        $('.blocs-container .bloc').each(function(index) {
+                        $('#blocsForm .bloc').each(function(index) {
 
                             $('input.pos', $(this)).val(index);
 

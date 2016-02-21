@@ -1,0 +1,22 @@
+{% extends "WHCmsBundle::main.html.twig" %}
+
+{% set _SEO = Page.seo %}
+
+
+{% block main %}
+
+
+    {% for pageBloc in Page.pageBlocs %}
+
+        <h2>{{ pageBloc.title }}</h2>
+        <div>{{ pageBloc.body }}</div>
+
+        {% if pageBloc.bloc %}
+
+            {% render(controller(pageBloc.bloc.Template.controller, {'slug' : pageBloc.bloc.slug})) %}
+
+        {% endif %}
+
+    {% endfor %}
+
+{% endblock %}

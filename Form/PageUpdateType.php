@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityRepository;
 use APP\CmsBundle\Entity\Page;
 use APP\CmsBundle\Entity\PageRepository;
 use WH\CmsBundle\Form\PageType;
+use WH\CmsBundle\Form\Backend\PageBlocType;
 
 class PageUpdateType extends PageType
 {
@@ -40,6 +41,14 @@ class PageUpdateType extends PageType
             ->add('body', 'textarea', array('label' => 'Corp de texte', 'required' => false, 'attr' => array('class' => 'tinymce', 'data-theme' => 'advanced')))
             ->add('thumb', new FileType(), array('label' => 'Miniature', 'required' => false))
             ->add('Seo', new SeoType())
+
+            ->add('pageBlocs', 'collection', array(
+                    'type'          => new PageBlocType(),
+                    'allow_add'     => true,
+                    'allow_delete'  => true,
+                    'by_reference'  => false
+                ))
+
 
         ;
 

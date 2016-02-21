@@ -1,0 +1,73 @@
+{% extends "WHCmsBundle:Backend:main.html.twig" %}
+
+{% block ariane %}{{ parent() }}<li>Blocs</li>{% endblock %}
+
+{% block title_right %}
+    <div class="btn-group pull-right">
+        <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-plus-square fa-lg"></i> Nouveau bloc
+        </button>
+        <ul class="dropdown-menu">
+            {% for template in templates %}
+                <li>
+                    <a href="{{ path('wh_admin_cms_bloc_create', {'template' : template.id }) }}" {{ Smart.modal() }} >{{ template.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+
+{% block subtitle %}> Liste{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="well">
+
+        <h1>Gestion des blocs</h1>
+
+    </div>
+
+    {{ Smart.openTable('fa-list', 'List') }}
+
+    <thead>
+    <tr>
+        <th></th>
+        <th>Nom</th>
+        <th>Slug</th>
+        <th>Template</th>
+        <th>Vue</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for entity in Blocs %}
+        <tr class="">
+            <td>
+                <a href="{{ path('wh_admin_cms_bloc_update', { 'Bloc': entity.id }) }}" class="btn btn-xs btn-primary" {{  Smart.modal() }}><i class="fa fa-edit"></i></a>
+                <a href="{{ path('wh_admin_cms_bloc_delete', { 'Bloc': entity.id }) }}" class="btn btn-xs btn-danger" {{  Smart.modal('sm') }}><i class="fa fa-trash-o"></i></a>
+            </td>
+            <td>{{ entity.name }}</td>
+            <td>{{ entity.slug }}</td>
+            <td>{{ entity.template.name }}</td>
+            <td>{{ entity.view }}</td>
+            <td>{{ entity.description }}</td>
+        </tr>
+
+    {% endfor %}
+    </tbody>
+
+    {{ Smart.closeTable() }}
+
+</div>
+{% endblock %}
+
+
+{% block javascript %}
+
+    {{ parent() }}
+
+    {{ Smart.modalSuccess() }}
+
+{% endblock %}

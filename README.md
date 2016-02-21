@@ -46,6 +46,9 @@ Pour insérer des blocs de contenu dans une page
 
 ## Les blocs
 
+Créer un template de type de bloc, préçiser le adminController le controller + action qui permet de controller les infos du front
+Dans les blocs on préçise les conditions et la vue
+
 
 
 ## Les pages
