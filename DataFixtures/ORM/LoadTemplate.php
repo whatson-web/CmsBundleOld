@@ -4,6 +4,7 @@ namespace WH\CmsBundle\DataFixtures\ORM;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use APP\CmsBundle\Entity\Template;
+use WH\CmsBundle\Entity\Bloc;
 
 class LoadTemplate implements FixtureInterface
 {
@@ -60,6 +61,12 @@ class LoadTemplate implements FixtureInterface
                     )
 
                 ),
+            ),
+            'bloc-pages'   => array(
+                'type'              => 'bloc',
+                'name'              => 'Bloc Page',
+                'controllerAdmin'   => 'WHCmsBundle:Backend/PageBloc',
+                'controller'        => 'WHCmsBundle:PageBloc:view'
             ),
 
         );
