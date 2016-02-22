@@ -39,6 +39,12 @@ class LoadTemplate implements FixtureInterface
                 'controllerAdmin'   => 'WHBlogBundle:Backend/Post',
                 'controller'        => 'WHBlogBundle:Bloc:view'
             ),
+            'bloc-medias'   => array(
+                'type'              => 'bloc',
+                'name'              => 'Bloc Medias',
+                'controllerAdmin'   => 'WHCmsBundle:Backend/Media',
+                'controller'        => 'WHCmsBundle:Media:view'
+            ),
 
         );
 

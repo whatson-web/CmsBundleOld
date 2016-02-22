@@ -57,6 +57,21 @@ abstract class File
     protected $title;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="position", type="integer", nullable=true)
+     */
+    protected $position;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\ManyToOne(targetEntity="WH\CmsBundle\Entity\Bloc", inversedBy="files")
+     */
+    protected $bloc;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -180,4 +195,53 @@ abstract class File
     {
         return $this->title;
     }
+
+    /**
+     * Set bloc
+     *
+     * @param \WH\CmsBundle\Entity\Bloc $bloc
+     * @return File
+     */
+    public function setBloc(\WH\CmsBundle\Entity\Bloc $bloc = null)
+    {
+        $this->bloc = $bloc;
+
+        return $this;
+    }
+
+    /**
+     * Get bloc
+     *
+     * @return \WH\CmsBundle\Entity\Bloc
+     */
+    public function getBloc()
+    {
+        return $this->bloc;
+    }
+
+
+
+    /**
+     * Set position
+     *
+     * @param integer $position
+     * @return File
+     */
+    public function setPosition($position)
+    {
+        $this->position = $position;
+
+        return $this;
+    }
+
+    /**
+     * Get position
+     *
+     * @return integer
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
 }

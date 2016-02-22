@@ -19,6 +19,7 @@ class FileType extends AbstractType
             ->add('alt', 'text', array('label' => 'Texte alternatif : ', 'required' => false))
             ->add('description', 'textarea', array('label' => 'Balise Description : ', 'required' => false))
             ->add('title', 'text', array('label' => 'Balise title : ', 'required' => false))
+            ->add('position', 'hidden')
         ;
     }
     

@@ -1,6 +1,30 @@
 # CmsBundle
 
 
+## Todo :
+
+
+Creer bloc page
+Crrer les blocs en fixtures
+
+Ajouter le template bloc galerie (lié à file)
+
+Sur bloc :
+Editer dans la page pour prévusaliser les résultats, et gérer les galeries
+
+
+Seo :
+Ajout de inherit
+Ajout de meta_title_inherit (ajoute en auto l'inherit, ou name si non présent
+Inherit par default
+
+Listerner sur seo pour associer auto entity et id
+Faire une fonction getUrl qui permet de générer l'url à partir du route name
+
+Créer un Seo par default (sur liste Seo, créer par default)
+
+Ajout de seoMetas permetant d'ajouter toutes les metas nécessaires
+
 ## Installation
 
     public function registerBundles()

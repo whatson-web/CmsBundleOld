@@ -45,8 +45,8 @@
     {% for entity in Blocs %}
         <tr class="">
             <td>
-                <a href="{{ path('wh_admin_cms_bloc_update', { 'Bloc': entity.id }) }}" class="btn btn-xs btn-primary" {{  Smart.modal() }}><i class="fa fa-edit"></i></a>
-                <a href="{{ path('wh_admin_cms_bloc_delete', { 'Bloc': entity.id }) }}" class="btn btn-xs btn-danger" {{  Smart.modal('sm') }}><i class="fa fa-trash-o"></i></a>
+                <a href="{{ path('wh_admin_cms_bloc_update', { 'Bloc': entity.id }) }}" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
+                <a href="{{ path('wh_admin_cms_bloc_delete', { 'Bloc': entity.id }) }}" class="btn btn-xs btn-danger" {{ Smart.confirm('Etes vous sûre ? ') }}><i class="fa fa-trash-o"></i></a>
             </td>
             <td>{{ entity.name }}</td>
             <td>{{ entity.slug }}</td>

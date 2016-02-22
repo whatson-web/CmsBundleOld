@@ -1,4 +1,4 @@
-<div class="widget-body no-padding">
+<div class="widget-body no-padding bloc">
     <div class="widget-body-toolbar">
 
         <div class="row">
@@ -22,7 +22,7 @@
             <div class="col-md-8">{{ form_row(form.body) }}</div>
             <div class="col-md-4">{{ form_row(form.thumb) }}</div>
         </div>
-        {{ form_row(form.position) }}
+        {{ form_row(form.position, {'attr' : {'class' : 'pos'}}) }}
     </div>
 
 </div>

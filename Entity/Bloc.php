@@ -63,6 +63,14 @@ class Bloc
      */
     private $datas;
 
+    /**
+     * @var string
+     *
+     * @ORM\OneToMany(targetEntity="APP\CmsBundle\Entity\File", mappedBy="bloc", cascade={"persist", "remove"})
+     */
+    private $files;
+
+
     public function __construct()
     {
         $this->datas = new \Doctrine\Common\Collections\ArrayCollection();
@@ -214,5 +222,42 @@ class Bloc
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * Add files
+     *
+     * @param \APP\CmsBundle\Entity\File $files
+     * @return Bloc
+     */
+    public function addFile(\APP\CmsBundle\Entity\File $files)
+    {
+        $this->files[] = $files;
+
+        $files->setBloc($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove files
+     *
+     * @param \APP\CmsBundle\Entity\File $files
+     */
+    public function removeFile(\APP\CmsBundle\Entity\File $files)
+    {
+        $this->files->removeElement($files);
+
+        $files->setBloc(null);
+    }
+
+    /**
+     * Get files
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getFiles()
+    {
+        return $this->files;
     }
 }
