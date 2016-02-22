@@ -37,13 +37,29 @@ class LoadTemplate implements FixtureInterface
                 'type'              => 'bloc',
                 'name'              => 'Bloc blog',
                 'controllerAdmin'   => 'WHBlogBundle:Backend/Post',
-                'controller'        => 'WHBlogBundle:Bloc:view'
+                'controller'        => 'WHBlogBundle:Bloc:view',
+                'blocs'             => array(
+                    array(
+                        'name'          => 'Liste d’actu',
+                        'slug'          => 'list_news',
+                        'view'          => 'WHBlogBundle:Post:listActus.html.twig'
+                    )
+
+                ),
             ),
             'bloc-medias'   => array(
                 'type'              => 'bloc',
                 'name'              => 'Bloc Medias',
-                'controllerAdmin'   => 'WHCmsBundle:Backend/Media',
-                'controller'        => 'WHCmsBundle:Media:view'
+                'controllerAdmin'   => 'WHCmsBundle:Backend/MediaBloc',
+                'controller'        => 'WHCmsBundle:MediaBloc:view',
+                'blocs'             => array(
+                    array(
+                        'name'          => 'Carrousel home',
+                        'slug'          => 'carrousel-home',
+                        'view'          => 'WHCmsBundle:MediaBloc:boostrap-carrousel.html.twig'
+                    )
+
+                ),
             ),
 
         );
