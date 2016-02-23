@@ -11,6 +11,7 @@ use APP\CmsBundle\Entity\Page;
 use APP\CmsBundle\Entity\PageRepository;
 use WH\CmsBundle\Form\PageType;
 use WH\CmsBundle\Form\Backend\PageBlocType;
+use APP\CmsBundle\Entity\TemplateRepository;
 
 class PageUpdateType extends PageType
 {
@@ -39,8 +40,21 @@ class PageUpdateType extends PageType
             ->add('slugTechnique', 'text', array('label' => 'Nom technique (ne change pas)', 'required' => false))
             ->add('resume', 'textarea',  array('label' => 'Résumé', 'required' => false))
             ->add('body', 'textarea', array('label' => 'Corp de texte', 'required' => false, 'attr' => array('class' => 'tinymce', 'data-theme' => 'advanced')))
-            ->add('thumb', new FileType(), array('label' => 'Miniature', 'required' => false))
+            ->add('thumb', new FileType(), array('label' => false, 'required' => false))
             ->add('Seo', new SeoType())
+
+            ->add('template', 'entity', array(
+                'required' => false,
+                'label' => 'Template',
+                'class' => 'APPCmsBundle:Template',
+                'empty_value' => 'Page normale',
+                'property' => 'name',
+                'query_builder' => function(TemplateRepository $er) {
+
+                        return $er->createQueryBuilder('Template')->andWhere('Template.type = :type')->setParameter('type', 'page');
+
+                    }
+            ))
 
             ->add('pageBlocs', 'collection', array(
                     'type'          => new PageBlocType(),

@@ -38,11 +38,6 @@ class TemplateRepository extends EntityRepository
                     $qb->setMaxResults($value);
                     break;
 
-                case 'order':
-                    $qb->orderBy('page.created', $value);
-                    break;
-
-
                 case 'conditions':
 
                     foreach($value as $k => $v) {
@@ -50,16 +45,6 @@ class TemplateRepository extends EntityRepository
                         if(empty($v)) continue;
 
                         switch($k) {
-
-                            case 'Search' :
-
-                                $qb->orWhere('Post.body LIKE :search');
-                                $qb->orWhere('Post.name LIKE :search');
-                                $qb->orWhere('Post.title LIKE :search');
-                                $qb->setParameter('search', '%'.$v.'%');
-
-                                break;
-
 
                             default :
 
