@@ -34,7 +34,7 @@ class PageRepository extends NestedTreeRepository
 
                 case 'Menu.slug' :
 
-                    $qb->andWhere('menu.slug = :MenuSlug');
+                    $qb->andWhere('Menu.slug = :MenuSlug');
                     $qb->setParameter('MenuSlug', $v);
 
                     break;
