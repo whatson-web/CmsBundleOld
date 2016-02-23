@@ -22,6 +22,7 @@
             <tr>
                 <th class="col-md-1"></th>
                 <th>Nom </th>
+                <th>Slug </th>
             </tr>
             </thead>
             <tbody>
@@ -32,6 +33,7 @@
                         <a href="{{ path('wh_admin_cms_menu_delete', { 'Menu': entity.id }) }}" class="btn btn-xs btn-danger" {{ Smart.confirm('Etes vous sûre de vouloir supprimer ce menu ? ') }}><i class="fa fa-trash-o"></i></a>
                     </td>
                     <td>{{ entity.name }}</td>
+                    <td>{{ entity.slug }}</td>
                 </tr>
             {% endfor %}
             </tbody>
