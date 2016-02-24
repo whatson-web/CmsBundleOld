@@ -32,11 +32,11 @@ class PageBlocController extends Controller
         $Pages = $em->getRepository('APPCmsBundle:Page')->get('all', $datas);
 
         return $this->render($bloc->getView(), array(
+                'Bloc' => $bloc,
                 'Pages' => $Pages
             ));
 
     }
-
 
 
 }
