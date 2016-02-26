@@ -39,6 +39,7 @@ class PageController extends Controller
 
         if ($Page->getTemplate()->getController()) {
 
+;
             $response = $this->forward($Page->getTemplate()->getController(), array(
                 'Page'  => $Page
             ));
@@ -73,3 +74,4 @@ class PageController extends Controller
 
 
 }
+
