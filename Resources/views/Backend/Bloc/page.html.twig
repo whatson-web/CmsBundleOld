@@ -20,7 +20,20 @@
         </div>
         <div class="row">
             <div class="col-md-8">{{ form_row(form.body) }}</div>
-            <div class="col-md-4">{{ form_row(form.thumb) }}</div>
+            <div class="col-md-4">
+
+                <div class="form-group">
+                    <div class="input-group">
+                        {{ form_widget(form.thumb.url, {'attr' : {'placeholder' : 'url de l’image', 'class' : 'form-control'}}) }}
+                        <div class="input-group-btn">
+                            <button class="btn btn-default btn-open" type="button"><i class="fa fa-folder-open"></i></button>
+                            <button class="btn btn-danger btn-delete" type="button"><i class="fa fa-remove"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-4">{{ form_row(form.type) }}</div>
         </div>
         {{ form_row(form.position, {'attr' : {'class' : 'pos'}}) }}
     </div>

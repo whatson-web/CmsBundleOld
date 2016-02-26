@@ -43,4 +43,6 @@ class PageBloc extends BasePageBloc
     {
         return $this->page;
     }
+
+
 }

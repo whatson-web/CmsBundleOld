@@ -3,6 +3,7 @@
 {% block meta_title %} {{ parent() }} : {{ page.name }} {% endblock %}
 {% block ariane %}{{ parent() }}<li>Edition</li>{% endblock %}
 {% block subtitle %}Edition d'une page{% endblock %}
+{% block title_right %}<a href="{{ path('wh_admin_cms_page_delete', { 'page': page.id }) }}" class="btn btn-lg btn-danger pull-right" {{ Smart.confirm('Etes-vous sûr de vouloir supprimer cette page ? ') }}><i class="fa fa-trash-o"></i> Supprimer cette page</a>{% endblock %}
 
 {% block content %}
 

@@ -53,7 +53,7 @@ class MediaBlocController extends Controller
 
         }
 
-        return $this->render('WHCmsBundle:Backend:Media/create.html.twig', array(
+        return $this->render('WHCmsBundle:Backend:MediaBloc/create.html.twig', array(
                 'form'     => $form->createView(),
                 'template' => $template
             ));

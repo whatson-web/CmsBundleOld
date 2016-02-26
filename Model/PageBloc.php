@@ -12,6 +12,19 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class PageBloc
 {
+
+
+    /**
+     * Status de page
+     * @var array
+     */
+    static protected $blocTypes = array(
+        'txt'       => 'Texte',
+        'img'       => 'Image',
+        'bloc'      => 'Bloc'
+    );
+
+
     /**
      * @var integer
      *
@@ -58,6 +71,21 @@ class PageBloc
      * @ORM\ManyToOne(targetEntity="WH\CmsBundle\Entity\Bloc")
      */
     protected $bloc;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="type", type="string", nullable=true, length=255)
+     */
+    protected $type;
+
+
+    public function __construct() {
+
+        $this->type = 'text';
+
+    }
+
 
     /**
      * Get id
@@ -206,5 +234,35 @@ class PageBloc
     {
         return $this->bloc;
     }
+
+
+    /**
+     * Set type
+     *
+     * @param string $type
+     * @return PageBloc
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    static public function getBlocTypesChoices()
+    {
+        return self::$blocTypes;
+    }
+
 
 }

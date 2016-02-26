@@ -13,7 +13,7 @@
 
         {% if pageBloc.bloc %}
 
-            {% render(controller(pageBloc.bloc.Template.controller, {'slug' : pageBloc.bloc.slug})) %}
+            {% render(controller(pageBloc.bloc.Template.controller, {'slug' : pageBloc.bloc.slug, 'page' : Page })) %}
 
         {% endif %}
 

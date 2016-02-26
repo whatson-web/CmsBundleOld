@@ -12,6 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Bloc
 {
+
+
     /**
      * @var integer
      *
@@ -260,4 +262,6 @@ class Bloc
     {
         return $this->files;
     }
+
+
 }

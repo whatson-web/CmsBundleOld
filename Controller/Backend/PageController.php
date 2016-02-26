@@ -78,7 +78,7 @@ class PageController extends Controller
         }
 
 
-        $templates = $APPCmsBundleTemplate->findAll();
+        $templates = $APPCmsBundleTemplate->findByType('page');
 
         return $this->render(
             'WHCmsBundle:Backend:Page/index.html.twig',
@@ -232,7 +232,7 @@ class PageController extends Controller
     public function deleteAction($page, Request $request)
     {
 
-        if ($page->getTemplate()->getAdminController()) {
+        if ($page->getTemplate() && $page->getTemplate()->getAdminController()) {
 
             return $this->forward(
                 $page->getTemplate()->getAdminController() . ':adminDelete',

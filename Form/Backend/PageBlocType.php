@@ -8,6 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use APP\CmsBundle\Entity\TemplateRepository;
 use WH\CmsBundle\Form\FileLittleType;
+use WH\CmsBundle\Model\PageBloc as ModelBloc;
 
 class PageBlocType extends AbstractType
 {
@@ -20,8 +21,9 @@ class PageBlocType extends AbstractType
         $builder
             ->add('title', 'text', array('attr' => array('placeholder' => 'Titre'), 'required' => false, 'label' => false))
             ->add('position', 'hidden')
-            ->add('body', 'textarea', array('attr' => array('placeholder' => 'Valeur texte', 'class' => 'tinymce'), 'required' => false, 'label' => false))
+            ->add('body', 'textarea', array('attr' => array('placeholder' => 'Valeur texte', 'class' => 'tinymce', 'data-theme' => 'advanced'), 'required' => false, 'label' => false))
             ->add('thumb', new FileLittleType(), array('label' => false, 'required' => false))
+            ->add('type', 'choice', array('label' => false, 'choices' => ModelBloc::getBlocTypesChoices()))
             ->add('bloc', 'entity', array(
                     'label'     => false,
                     'class'     => 'WHCmsBundle:Bloc',
