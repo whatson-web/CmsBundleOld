@@ -263,5 +263,4 @@ class Bloc
         return $this->files;
     }
 
-
 }

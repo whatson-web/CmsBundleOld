@@ -23,6 +23,7 @@ class HomeController extends Controller
 
         $Page = $em->getRepository('APPCmsBundle:Page')->get('one', array('conditions' => array('Template.slug' => 'home')));
 
+
         return $this->render('WHCmsBundle:Home:index.html.twig', array(
                 'Page' => $Page
 

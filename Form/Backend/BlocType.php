@@ -21,7 +21,7 @@ class BlocType extends AbstractType
             ->add('description', 'textarea', array('label' => 'Description : '))
         ;
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */
