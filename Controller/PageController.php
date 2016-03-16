@@ -11,67 +11,50 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 class PageController extends Controller
 {
 
-	/**
-	 * @param string $url
+    /**
+     * @param string $url
      * @Route("/{url}", name="wh_front_cms_page", requirements={"url" = ".*"})
-	 * @return \Symfony\Component\HttpFoundation\Response
-	 * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-	 */
-	public function viewAction($url)
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+     */
+    public function viewAction($url)
     {
-
-        $tab = array();
 
         $em = $this->getDoctrine()->getManager();
 
-        $repo = $em->getRepository('APPCmsBundle:Page');
+        $pageRepository = $em->getRepository('APPCmsBundle:Page');
 
-        $Page = $repo->findOneByUrl($url);
+        $page = $pageRepository->findOneByUrl($url);
 
-        if(!$Page) {
+        if (!$page) {
 
-            //Là faudrait aller voir dans l'historique
             throw $this->createNotFoundException('Cette page n’existe plus ou a été déplacée');
-
         }
 
-        $tab['Page'] = $Page;
+        if ($page->getTemplate()->getController()) {
 
-        if ($Page->getTemplate()->getController()) {
-
-;
-            $response = $this->forward($Page->getTemplate()->getController(), array(
-                'Page'  => $Page
+            $response = $this->forward($page->getTemplate()->getController(), array(
+                'Page' => $page
             ));
 
             return $response;
-
         }
 
-        //File d'ariane
-        $path = $repo->getPath($Page);
-        $tab['path'] = $path;
+        $path = $pageRepository->getPath($page);
 
-        //Template :
-        $Tpl = $Page->getTemplate()->getTplt();
+        $renderVars         = array();
+        $renderVars['Page'] = $page;
+        $renderVars['path'] = $path;
 
-        if ( $this->get('templating')->exists($Tpl) ) {
+        $templateView = $page->getTemplate()->getTplt();
 
-            return $this->render($Tpl, $tab);
+        if ($this->get('templating')->exists($templateView)) {
 
-        }else{
+            return $this->render($templateView, $renderVars);
+        } else {
 
-            return $this->render('WHCmsBundle:Page:index.html.twig', $tab);
-
+            return $this->render('WHCmsBundle:Page:index.html.twig', $renderVars);
         }
-
-
-
     }
 
-
-
-
-
 }
-
