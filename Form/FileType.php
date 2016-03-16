@@ -22,7 +22,7 @@ class FileType extends AbstractType
             ->add('position', 'hidden')
         ;
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */

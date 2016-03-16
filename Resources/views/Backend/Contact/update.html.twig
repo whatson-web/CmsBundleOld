@@ -1,7 +1,16 @@
 {% extends "WHCmsBundle:Backend:main.html.twig" %}
 {% form_theme form 'bootstrap_3_layout.html.twig' %}
-{% block meta_title %} {{ parent() }} : {{ page.name }} {% endblock %}
-{% block ariane %}{{ parent() }}<li>Edition</li>{% endblock %}
+
+{% block meta_title %} {{ parent() }} : {{ organisation.page.name }} {% endblock %}
+
+{% block ariane %}
+
+    {{ parent() }}
+
+    <li>Edition d'une page contact</li>
+
+{% endblock %}
+
 {% block subtitle %}Edition d'une page contact{% endblock %}
 
 {% block content %}
@@ -20,27 +29,42 @@
 
                 <ol class="breadcrumb">
                     {% for page in path %}
-                        <li><a href="{{ path('wh_admin_cms_page_update', {'page' : page.id}) }}">{{ page.name }}</a></li>
+                        <li>
+                            <a href="{{ path('wh_admin_cms_page_update', {'page' : page.id}) }}">{{ page.name }}</a>
+                        </li>
                     {% endfor %}
-                    <li><input type="text" id="wh_cmsbundle_page_slugReplace" name="wh_cmsbundle_page[slugReplace]" placeholder="modifier l’url" class="input-small" value="{{ form.page.slugReplace.vars.data }}"></li>
+                    <li>
+                        <input type="text" id="wh_cmsbundle_page_slugReplace" name="wh_cmsbundle_page[slugReplace]"
+                               placeholder="modifier l’url" class="input-small"
+                               value="{{ form.page.slugReplace.vars.data }}">
+                    </li>
                 </ol>
 
             </small>
 
-            <div class="jarviswidget jarviswidget-color-blueDark" data-widget-colorbutton="false"
-                 data-widget-togglebutton="false" data-widget-editbutton="false" data-widget-fullscreenbutton="false"
-                 data-widget-deletebutton="false">
+            <div class="jarviswidget jarviswidget-color-blueDark">
 
                 <header>
+
                     <ul class="nav nav-tabs pull-left in">
-                        <li class="active"><a data-toggle="tab" href="#folioContact"><i class="fa fa-file-o"></i> Info de contact </a></li>
-                        <li class=""><a data-toggle="tab" href="#folioPage"><i class="fa fa-file-o"></i> Edition de la page </a></li>
-                        <li><a data-toggle="tab" href="#folioSeo"><i class="fa  fa-arrow-circle-o-up"></i> Seo </a></li>
-                        <li><a data-toggle="tab" href="#folioTechnique"><i class="fa  fa-cog"></i> Techniques </a></li>
+                        <li class="active">
+                            <a data-toggle="tab" href="#folioPage"><i class="fa fa-file-o"></i> Edition d'une page
+                                contact</a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#folioCoordonnees"><i class="fa fa-building"></i> Coordonnées</a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#folioSeo"><i class="fa  fa-arrow-circle-o-up"></i> Seo</a>
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#folioTechnique"><i class="fa  fa-cog"></i> Techniques</a>
+                        </li>
                     </ul>
 
                     <div class="widget-toolbar">
-                        <a href="{{ path('wh_front_cms_page', {'url' : page.page.url}) }}" target="_blank" class="btn btn-success btn-xs"><i class="fa fa-eye"></i> Voir la page</a>
+                        <a href="{{ path('wh_front_cms_page', {'url' : organisation.page.url}) }}" target="_blank"
+                           class="btn btn-success btn-xs"><i class="fa fa-eye"></i> Voir la page</a>
                     </div>
 
                 </header>
@@ -51,71 +75,7 @@
 
                         <div class="tab-content">
 
-
-                            <div class="tab-pane active" id="folioContact">
-
-                                <fieldset>
-                                    <legend>Coordonnées</legend>
-
-                                    <div class="row">
-
-                                        <div class="col col-md-2">{{ form_row(form.civility) }}</div>
-                                        <div class="col col-md-5">{{ form_row(form.firstname) }}</div>
-                                        <div class="col col-md-5">{{ form_row(form.lastname) }}</div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col col-md-4">{{ form_row(form.LegalForm) }}</div>
-                                        <div class="col col-md-8">{{ form_row(form.socialReason) }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col col-md-4">{{ form_row(form.code_ape) }}</div>
-                                        <div class="col col-md-4">{{ form_row(form.siren_number) }}</div>
-                                        <div class="col col-md-4">{{ form_row(form.siret_number) }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col col-md-8">{{ form_row(form.tva_number) }}</div>
-                                        <div class="col col-md-4"></div>
-                                    </div>
-                                </fieldset>
-
-                                <fieldset>
-
-                                    <legend>Contacts</legend>
-
-                                    <div class="row">
-
-                                        <div class="col col-md-4">{{ form_row(form.email, {'iconAppend' : 'fa fa-envelope'}) }}</div>
-                                        <div class="col col-md-4">{{ form_row(form.phone, {'iconAppend' : 'fa fa-phone', 'attr': {'data-mask': '99 99 99 99 99', 'data-mask-placeholder': '_'}}) }}</div>
-                                        <div class="col col-md-4">{{ form_row(form.mobile, {'iconAppend' : 'fa fa-mobile', 'attr': {'data-mask': '99 99 99 99 99', 'data-mask-placeholder': '_'}}) }}</div>
-
-                                    </div>
-
-                                </fieldset>
-
-
-                                <fieldset>
-
-                                    <legend>Adresse(s)</legend>
-
-                                    <div class="row">
-
-                                        <div class="col col-md-6">{{ form_row(form.adress) }}</div>
-                                        <div class="col col-md-6">{{ form_row(form.adressCplt) }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col col-md-4">{{ form_row(form.zipCode) }}</div>
-                                        <div class="col col-md-8">{{ form_row(form.town) }}</div>
-                                    </div>
-
-
-                                    {{ form_row(form.comment) }}
-
-                                </fieldset>
-
-                            </div>
-
-                            <div class="tab-pane" id="folioPage">
+                            <div class="tab-pane active" id="folioPage">
 
                                 <fieldset>
 
@@ -124,6 +84,77 @@
                                     {{ form_row(form.page.title) }}
                                     {{ form_row(form.page.body) }}
 
+                                </fieldset>
+
+                                <fieldset>
+
+                                    <legend>
+                                        <a href="#" class="btn btn-success btn-xs pull-right" id="btnAddBlocForm"><i
+                                                    class="fa fa-plus"> Ajouter</i></a>
+                                        Blocs
+                                    </legend>
+
+                                    <div data-prototype="{% filter escape %}{{ include('WHCmsBundle:Backend:Bloc/page.html.twig', { 'form': form.page.pageBlocs.vars.prototype }) }}{% endfilter %}"
+                                         id="blocsForm">
+
+                                        {% for bloc in form.page.pageBlocs %}
+                                            {{ include('WHCmsBundle:Backend:Bloc/page.html.twig', { 'form': bloc }) }}
+                                        {% endfor %}
+                                        {% do form.page.pageBlocs.setRendered %}
+
+                                    </div>
+
+                                </fieldset>
+
+                            </div>
+
+                            <div class="tab-pane" id="folioCoordonnees">
+
+                                <fieldset>
+
+                                    <legend>Adresse</legend>
+
+                                    <div class="row">
+                                        <div class="col-md-6">{{ form_row(form.adress) }}</div>
+                                        <div class="col-md-6">{{ form_row(form.adressCplt) }}</div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">{{ form_row(form.zipCode) }}</div>
+                                        <div class="col-md-6">{{ form_row(form.town) }}</div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12">{{ form_row(form.iframeGoogleMap) }}</div>
+                                    </div>
+
+                                    <legend>Coordonnées</legend>
+
+                                    <div class="row">
+                                        <div class="col-md-4">{{ form_row(form.mobile) }}</div>
+                                        <div class="col-md-4">{{ form_row(form.phone) }}</div>
+                                        <div class="col-md-4">{{ form_row(form.email) }}</div>
+                                    </div>
+
+                                    <legend>Entreprise</legend>
+
+                                    <div class="row">
+                                        <div class="col-md-4">{{ form_row(form.civility) }}</div>
+                                        <div class="col-md-4">{{ form_row(form.firstname) }}</div>
+                                        <div class="col-md-4">{{ form_row(form.lastname) }}</div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4">{{ form_row(form.LegalForm) }}</div>
+                                        <div class="col-md-4">{{ form_row(form.socialReason) }}</div>
+                                        <div class="col-md-4">{{ form_row(form.code_ape) }}</div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4">{{ form_row(form.tva_number) }}</div>
+                                        <div class="col-md-4">{{ form_row(form.siret_number) }}</div>
+                                        <div class="col-md-4">{{ form_row(form.siren_number) }}</div>
+                                    </div>
 
                                 </fieldset>
 
@@ -141,7 +172,8 @@
                                     <div class="col-md-6">{{ form_row(form.page.slugTechnique) }}</div>
                                     <div class="col-md-6">
                                         <label>Slug : </label>
-                                        <input type="text" disabled="disabled" class="form-control" value="{{ page.page.slug }}">
+                                        <input type="text" disabled="disabled" class="form-control"
+                                               value="{{ organisation.page.slug }}">
                                     </div>
                                 </div>
 
@@ -165,13 +197,14 @@
 
             <div class="widget-body">
 
+                {{ form_row(form.page.template) }}
                 {{ form_row(form.page.parent) }}
                 {{ form_row(form.page.Menus) }}
                 {{ form_row(form.page.resume) }}
                 {% block side_barre %}{% endblock %}
                 <hr/>
-                {{ form_row(form.default) }}
                 {{ form_row(form.page.status) }}
+                {{ form_row(form.default) }}
 
                 <div class="form-actions">
 
@@ -201,10 +234,11 @@
 
             {{ Smart.closeBox() }}
 
-
         </div>
 
     </div>
+
+    {% do form.page.slugReplace.setRendered %}
 
     {{ form_end(form) }}
 
@@ -217,47 +251,6 @@
     {{ elfinder_tinymce_init4('tinycme') }}
     {{ tinymce_init() }}
     {{ form_javascript(form) }}
-
-    <script>
-
-        $(document).ready(function() {
-
-            addEl($('.blocs-container'), $('#btn-add-bloc'), 'BlocNum');
-
-            $(function() {
-
-                $('.blocs-container').sortable({
-                    start: function(event, ui) {
-                        var start_pos = ui.item.index();
-                        ui.item.data('start_pos', start_pos);
-                    },
-                    change: function(event, ui) {
-                        var start_pos = ui.item.data('start_pos');
-                        var index = ui.placeholder.index();
-                        if (start_pos < index) {
-                            $('.blocs-container .bloc:nth-child(' + index + ')').addClass('highlights');
-                        } else {
-                            $('.blocs-container .bloc:eq(' + (index + 1) + ')').addClass('highlights');
-                        }
-                    },
-                    update: function(event, ui) {
-
-                        $('.blocs-container .bloc').removeClass('highlights');
-
-
-                        $('.blocs-container .bloc').each(function(index) {
-
-                            $('input.pos', $(this)).val(index);
-
-                        });
-
-                    }
-                });
-
-            });
-
-        });
-
-    </script>
+    {{ Smart.addEl('#blocsForm', '#btnAddBlocForm') }}
 
 {% endblock %}

@@ -20,24 +20,21 @@ use WH\CmsBundle\Form\Backend\ContactType;
 class ContactController extends Controller
 {
 
-
-	/**
+    /**
      * @param         $page
      * @param Request $request
      * @ParamConverter("page", class="APPCmsBundle:Page")
-	 * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
-	 */
-	public function updatePageAction($page, Request $request)
+     * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
+    public function updatePageAction($page, Request $request)
     {
 
         $em = $this->getDoctrine()->getManager();
 
-        /*
-         * Retrouver l'organisation correpondante :
-         */
+        // Retrouver l'organisation correpondante
         $organisation = $em->getRepository('APPOrganisationBundle:Organisation')->findOneByPage($page);
 
-        if(!$organisation) {
+        if (!$organisation) {
 
             $organisation = new Organisation();
 
@@ -47,9 +44,7 @@ class ContactController extends Controller
             $em->persist($organisation);
             $em->flush();
             $em->refresh($organisation);
-
         }
-
 
         $WHCmsBundlePage = $em->getRepository('APPCmsBundle:Page');
 
@@ -62,22 +57,19 @@ class ContactController extends Controller
             $em->persist($organisation);
             $em->flush();
 
+            if ($organisation->getDefault()) {
 
-            if($organisation->getDefault()) {
+                $othersOrganisations = $em->getRepository('APPOrganisationBundle:Organisation')->findByDefault(true);
 
-                $orgs = $em->getRepository('APPOrganisationBundle:Organisation')->findByDefault(true);
+                foreach ($othersOrganisations as $othersOrganisation) {
 
-                foreach($orgs as $v) {
-                    if($v->getId() != $organisation->getId()) {
+                    if ($othersOrganisation->getId() != $organisation->getId()) {
 
-                        $v->setDefault(false);
-                        $em->persist($v);
-
+                        $othersOrganisation->setDefault(false);
+                        $em->persist($othersOrganisation);
+                        $em->flush();
                     }
                 }
-
-                $em->flush();
-
             }
 
             // Mise à jour des url
@@ -88,26 +80,24 @@ class ContactController extends Controller
 
             $request->getSession()->getFlashBag()->add('success', 'Page modifiée');
 
-
-
             if ($form->getClickedButton()->getName() == 'clickedButton') {
 
-	            return $this->redirect($this->generateUrl('whad_cms_page_update', array('page' => $page->getId())));
+                return $this->redirect($this->generateUrl('whad_cms_page_update', array('page' => $page->getId())));
             }
 
             return $this->redirect($this->generateUrl('wh_admin_cms_pages'));
-
         }
 
         $path = $WHCmsBundlePage->getPath($page);
 
-        return $this->render('WHCmsBundle:Backend:Contact/update.html.twig', array(
-			'page' => $organisation,
-			'form' => $form->createView(),
-			'path' => $path
-        ));
-
+        return $this->render(
+            'WHCmsBundle:Backend:Contact/update.html.twig',
+            array(
+                'organisation' => $organisation,
+                'form' => $form->createView(),
+                'path' => $path,
+            )
+        );
     }
-
 
 }
