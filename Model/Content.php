@@ -79,6 +79,11 @@ class Content
     protected $url;
 
     /**
+     * @ORM\Column(name="url_rewrite", type="string", length=255, nullable=true)
+     */
+    protected $url_rewrite;
+
+    /**
      * @var string
      * @ORM\Column(name="route", type="string", length=255, nullable=true)
      */
@@ -317,7 +322,38 @@ class Content
      */
     public function getUrl()
     {
+
+        $urlRewrite = $this->getUrlRewrite();
+
+        if ($urlRewrite) {
+
+            return $urlRewrite;
+        }
+
         return $this->url;
+    }
+
+    /**
+     * Set url_rewrite
+     *
+     * @param string $urlRewrite
+     * @return Page
+     */
+    public function setUrlRewrite($urlRewrite)
+    {
+        $this->url_rewrite = $urlRewrite;
+
+        return $this;
+    }
+
+    /**
+     * Get url_rewrite
+     *
+     * @return string
+     */
+    public function getUrlRewrite()
+    {
+        return $this->url_rewrite;
     }
 
     /**

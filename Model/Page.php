@@ -42,11 +42,6 @@ abstract class Page extends WHCmsContent
     protected $menus;
 
     /**
-     * @ORM\Column(name="url_rewrite", type="string", length=255, nullable=true)
-     */
-    protected $url_rewrite;
-
-    /**
      * @ORM\OneToMany(targetEntity="WH\CmsBundle\Entity\PageBloc", mappedBy="page", cascade={"persist", "remove"})
      */
     protected $pageBlocs;
@@ -224,32 +219,6 @@ abstract class Page extends WHCmsContent
     public function getMenus()
     {
         return $this->menus;
-    }
-
-
-
-
-    /**
-     * Set url_rewrite
-     *
-     * @param string $urlRewrite
-     * @return Page
-     */
-    public function setUrlRewrite($urlRewrite)
-    {
-        $this->url_rewrite = $urlRewrite;
-
-        return $this;
-    }
-
-    /**
-     * Get url_rewrite
-     *
-     * @return string
-     */
-    public function getUrlRewrite()
-    {
-        return $this->url_rewrite;
     }
 
     /**

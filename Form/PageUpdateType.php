@@ -2,19 +2,19 @@
 
 namespace WH\CmsBundle\Form;
 
-use Symfony\Component\Form\AbstractType;
+use APP\CmsBundle\Entity\Page;
+use APP\CmsBundle\Entity\TemplateRepository;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Doctrine\ORM\EntityRepository;
-
-use APP\CmsBundle\Entity\Page;
-use APP\CmsBundle\Entity\PageRepository;
-use WH\CmsBundle\Form\PageType;
 use WH\CmsBundle\Form\Backend\PageBlocType;
-use APP\CmsBundle\Entity\TemplateRepository;
 
+/**
+ * Class PageUpdateType
+ * @package WH\CmsBundle\Form
+ */
 class PageUpdateType extends PageType
 {
+
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -24,13 +24,9 @@ class PageUpdateType extends PageType
 
         parent::buildForm($builder, $options);
 
-
         $builder
             ->remove('editer')
             ->remove('new')
-        ;
-
-        $builder
             ->add('name', 'text')
             ->add('status', 'choice', array('label' => 'Etat de la page : ', 'choices' => Page::getStatusChoices()))
             ->add('save_and_stay', 'submit', array('label' => 'Enregistrer', 'attr' => array('class' => 'btn btn-success')))
@@ -38,39 +34,31 @@ class PageUpdateType extends PageType
             ->add('title', 'text', array('label' => 'Titre de la page', 'required' => false))
             ->add('slugReplace', 'text', array('label' => '', 'required' => false))
             ->add('slugTechnique', 'text', array('label' => 'Nom technique (ne change pas)', 'required' => false))
-            ->add('resume', 'textarea',  array('label' => 'Résumé', 'required' => false))
+            ->add('url_rewrite', 'text', array('label' => 'Redirection', 'required' => false))
+            ->add('resume', 'textarea', array('label' => 'Résumé', 'required' => false))
             ->add('body', 'textarea', array('label' => 'Corp de texte', 'required' => false, 'attr' => array('class' => 'tinymce', 'data-theme' => 'advanced')))
             ->add('thumb', new FileType(), array('label' => false, 'required' => false))
             ->add('Seo', new SeoType())
-
             ->add('template', 'entity', array(
-                'required' => false,
-                'label' => 'Template',
-                'class' => 'APPCmsBundle:Template',
-                'empty_value' => 'Page normale',
-                'property' => 'name',
-                'query_builder' => function(TemplateRepository $er) {
+                'required'      => false,
+                'label'         => 'Template',
+                'class'         => 'APPCmsBundle:Template',
+                'empty_value'   => 'Page normale',
+                'property'      => 'name',
+                'query_builder' => function (TemplateRepository $er) {
 
                         return $er->createQueryBuilder('Template')->andWhere('Template.type = :type')->setParameter('type', 'page');
 
                     }
             ))
-
             ->add('pageBlocs', 'collection', array(
-                    'type'          => new PageBlocType(),
-                    'allow_add'     => true,
-                    'allow_delete'  => true,
-                    'by_reference'  => false
-                ))
-
-
-        ;
-
-
-
-
+                'type'         => new PageBlocType(),
+                'allow_add'    => true,
+                'allow_delete' => true,
+                'by_reference' => false
+            ));
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */
