@@ -1,6 +1,6 @@
 <div class="form-group">
 <label>Image : </label>
-{% if form.vars.data.url %}
+{% if form.vars.data.url is defined %}
     <img src="{{ form.vars.data.url }}" style="max-width:100%"/>
 {% endif %}
 <div class="input-group">
