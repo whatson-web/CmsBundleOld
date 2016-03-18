@@ -1,5 +1,8 @@
 <div class="form-group">
-<label for="">url : </label>
+<label>Image : </label>
+{% if form.vars.data.url %}
+    <img src="{{ form.vars.data.url }}" style="max-width:100%"/>
+{% endif %}
 <div class="input-group">
     {{ form_widget(form.url, {'attr' : {'class' : 'form-control'}}) }}
     <div class="input-group-btn">
