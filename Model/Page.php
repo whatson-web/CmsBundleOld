@@ -418,8 +418,26 @@ abstract class Page extends WHCmsContent
      */
     public function getPageBlocs()
     {
+
+        $pageBlocs = $this->pageBlocs->getValues();
+
+        if (!empty($pageBlocs)) {
+
+            usort($pageBlocs, function ($a, $b) {
+
+                return ($a->getPosition() > $b->getPosition());
+
+            });
+
+            $this->pageBlocs->clear();
+
+            foreach ($pageBlocs as $pageBloc) {
+
+                $this->pageBlocs->add($pageBloc);
+            }
+        }
+
         return $this->pageBlocs;
     }
-
 
 }
