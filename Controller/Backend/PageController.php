@@ -168,6 +168,7 @@ class PageController extends Controller
     public function updateAction($page, Request $request)
     {
 
+        dump($page);
         if ($page->getTemplate()->getAdminController()) {
 
             return $this->forward(
@@ -195,7 +196,7 @@ class PageController extends Controller
             // Mise à jour des url
             $application = new Application($this->get('kernel'));
             $application->setAutoExit(false);
-            $input = new ArrayInput(array('command' => 'page:generateUrl', 'id' => $page->getId()));
+            $input = new ArrayInput(array('command' => 'wh:page:generateUrl', 'id' => $page->getId()));
             $application->run($input, new NullOutput());
 
             $request->getSession()->getFlashBag()->add('success', 'Page modifiée');
