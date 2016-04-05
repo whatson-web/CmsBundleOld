@@ -168,7 +168,6 @@ class PageController extends Controller
     public function updateAction($page, Request $request)
     {
 
-        dump($page);
         if ($page->getTemplate()->getAdminController()) {
 
             return $this->forward(
