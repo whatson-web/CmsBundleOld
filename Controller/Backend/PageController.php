@@ -376,8 +376,8 @@ class PageController extends Controller
                         ) . '">' . $node['name'] . '</a> ';
                     $return .= '<span>- ' . $node['template']['name'] . '</span>';
                     $return .= '<small><br /><a href="' . $controller->generateUrl(
-                            'wh_admin_cms_page_publish',
-                            array('page' => $node['id'])
+                            'wh_front_cms_page',
+                            array('url' => $node['url'])
                         ) . '">' . $node['url'] . '</a></small>';
 
                     $return .= '</div>';
