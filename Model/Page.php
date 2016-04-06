@@ -37,6 +37,11 @@ abstract class Page extends WHCmsContent
     protected $thumb;
 
     /**
+     * @ORM\OneToOne(targetEntity="File", cascade={"persist", "remove"})
+     */
+    protected $banner;
+
+    /**
      * @ORM\ManyToMany(targetEntity="Menu", mappedBy="pages", cascade={"persist"})
      */
     protected $menus;
@@ -357,6 +362,29 @@ abstract class Page extends WHCmsContent
     public function getThumb()
     {
         return $this->thumb;
+    }
+
+    /**
+     * Set banner
+     *
+     * @param File $banner
+     * @return Page
+     */
+    public function setBanner(File $banner = null)
+    {
+        $this->banner = $banner;
+
+        return $this;
+    }
+
+    /**
+     * Get banner
+     *
+     * @return File
+     */
+    public function getBanner()
+    {
+        return $this->banner;
     }
 
     /**

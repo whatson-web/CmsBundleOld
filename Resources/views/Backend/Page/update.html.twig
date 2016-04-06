@@ -161,6 +161,16 @@
 
                 {{ Smart.closeBox() }}
 
+                {{ Smart.openBox('fa-list', 'Bannière') }}
+
+                <div class="widget-body">
+
+                    {{ include('WHCmsBundle:Backend:Media/image-form.html.twig', { 'form': form.banner }) }}
+
+                </div>
+
+                {{ Smart.closeBox() }}
+
 
             </div>
 

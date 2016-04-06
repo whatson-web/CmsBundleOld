@@ -38,6 +38,7 @@ class PageUpdateType extends PageType
             ->add('resume', 'textarea', array('label' => 'Résumé', 'required' => false))
             ->add('body', 'textarea', array('label' => 'Corp de texte', 'required' => false, 'attr' => array('class' => 'tinymce', 'data-theme' => 'advanced')))
             ->add('thumb', new FileType(), array('label' => false, 'required' => false))
+            ->add('banner', new FileType(), array('label' => false, 'required' => false))
             ->add('Seo', new SeoType())
             ->add('template', 'entity', array(
                 'required'      => false,
