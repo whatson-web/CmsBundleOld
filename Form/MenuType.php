@@ -16,6 +16,7 @@ class MenuType extends AbstractType
     {
         $builder
             ->add('name', 'text', array('label' => 'Nom : '))
+            ->add('slug', 'text', array('label' => 'Slug : '))
         ;
     }
     

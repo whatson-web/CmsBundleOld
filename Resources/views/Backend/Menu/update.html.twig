@@ -6,7 +6,7 @@
 
 {% block body %}
 
-    {{ form_start(form, {'action': path('wh_admin_cms_menu_update', {'Template' : Template.id}), 'method': 'POST'}) }}
+    {{ form_start(form, {'action': path('wh_admin_cms_menu_update', {'Menu' : Menu.id}), 'method': 'POST'}) }}
 
     {{ include('WHCmsBundle:Backend:Menu/form.html.twig') }}
 
