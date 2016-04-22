@@ -250,8 +250,7 @@ class PageController extends Controller
 
         $request->getSession()->getFlashBag()->add('success', 'Page supprimée');
 
-        return $this->redirect($request->headers->get('referer'));
-
+        return $this->redirect($this->generateUrl('wh_admin_cms_pages'));
     }
 
     /**
