@@ -1,0 +1,90 @@
+{% extends "WHSmartAdminBundle::popup.html.twig" %}
+
+{% form_theme form 'bootstrap_3_layout.html.twig' %}
+
+{% block title %} Créer un nouveau paramètre {% endblock %}
+
+{% block body %}
+
+    {{ form_start(form, {'action': path('wh_bk_cms_txt_create'), 'method': 'POST'}) }}
+
+    <div class="padded">
+
+        {{ form_row(form.type) }}
+        {{ form_row(form.slug) }}
+        {{ form_row(form.name) }}
+        {{ form_row(form.valueString) }}
+        {{ form_row(form.valueLink) }}
+        {{ form_row(form.valueText) }}
+
+    </div>
+
+    <div class="modal-footer">
+
+        <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">
+            Annuler
+        </button>
+
+        <button type="submit" class="btn btn-primary" name="submited" value="">
+            Créer
+        </button>
+
+    </div>
+
+    {{ form_end(form) }}
+
+    <script type="text/javascript" >
+
+        var gereAffichageValeurs = function() {
+
+            $('#wh_parameterbundle_parameter_valueString').parent('.form-group ').css('display', 'none');
+            $('#wh_parameterbundle_parameter_valueLink').parent('.form-group ').css('display', 'none');
+            $('#wh_parameterbundle_parameter_valueText').parent('.form-group ').css('display', 'none');
+
+            var type = $('#wh_parameterbundle_parameter_type').val();
+
+            if (type == 'link') {
+
+                $('#wh_parameterbundle_parameter_valueLink').parent('.form-group ').css('display', 'block');
+                $('#wh_parameterbundle_parameter_valueString').parent('.form-group ').css('display', 'block');
+
+            } else if(type == 'input') {
+
+                $('#wh_parameterbundle_parameter_valueString').parent('.form-group ').css('display', 'block');
+
+            } else if(type == 'textarea') {
+
+                $('#wh_parameterbundle_parameter_valueText').parent('.form-group ').css('display', 'block');
+
+            }
+
+        };
+
+        $('#wh_parameterbundle_parameter_type').change(function(){
+            gereAffichageValeurs();
+        });
+
+        gereAffichageValeurs();
+
+        var form = $(".modal form");
+
+        $(form).submit(function() {
+
+            $.ajax({
+                type    : $(this).attr('method'),
+                url     : $(this).attr('action'),
+                data    : $(this).serialize(), // serializes the form's elements.
+                success: function(data)
+                {
+
+                    popupSuccess(data);
+
+                }
+            });
+
+            return false; // avoid to execute the actual submit of the form.
+        });
+
+    </script>
+
+{% endblock %}

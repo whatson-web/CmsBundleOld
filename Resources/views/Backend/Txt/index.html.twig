@@ -1,0 +1,78 @@
+{% extends "WHMainBundle:Backend:main.html.twig" %}
+
+{% block ariane %}{{ parent() }}<li><a href="{{ path('wh_bk_cms_txts') }}">Textes et liens</a></li>{% endblock %}
+
+{% block title_right %}<a href="{{ path('wh_bk_cms_txt_create') }}" class="btn btn-success pull-right" {{ Smart.modal() }}><i class="fa fa-plus"></i> Nouveau</a>{% endblock %}
+
+{% block subtitle %}Textes et liens{% endblock %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="well">
+
+            <h1>Gestion des paramètres</h1>
+
+            <table  class="display projects-table table table-striped table-bordered table-hover" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Nom </th>
+                    <th>Nom technique </th>
+                    <th>Valeur</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entity in entities %}
+                    <tr>
+                        <td>
+                            <a href="{{ path('wh_bk_cms_txt_update', { 'txt': entity.id }) }}" class="btn btn-xs btn-primary" data-target="#modal-mm" data-toggle="modal"><i class="fa fa-edit"></i></a>
+                            <a href="{{ path('wh_bk_cms_txt_delete', { 'txt': entity.id }) }}" class="btn btn-xs btn-danger" {{ Smart.confirm('Etes-vous sûr de vouloir supprimer ce paramètre ? ') }}><i class="fa fa-trash-o"></i></a>
+                        </td>
+                        <td>{{ entity.name }}</td>
+                        <td>{{ entity.slug }}</td>
+                        <td>
+
+                            {% if entity.type == 'link' %}
+                                <a href="{{ entity.valueLink }}">{{ entity.valueString }}</a>
+                            {% elseif entity.type == 'input' %}
+                                {{ entity.valueString }}
+                            {% elseif entity.type == 'textarea' %}
+                                {{ entity.valueText | nl2br }}
+                            {% endif %}
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script type="application/javascript">
+
+        var popupSuccess = function (data) {
+
+            if($.isPlainObject(data)) {
+
+                window.location = data.redirect;
+
+            }else{
+
+                $('#modal .modal-content').html(data);
+
+            }
+
+
+        }
+
+    </script>
+{% endblock %}
