@@ -3,18 +3,7 @@
 {% block ariane %}{{ parent() }}<li>Blocs</li>{% endblock %}
 
 {% block title_right %}
-    <div class="btn-group pull-right">
-        <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown">
-            <i class="fa fa-plus-square fa-lg"></i> Nouveau bloc
-        </button>
-        <ul class="dropdown-menu">
-            {% for template in templates %}
-                <li>
-                    <a href="{{ path('wh_admin_cms_bloc_create', {'template' : template.id }) }}" {{ Smart.modal() }} >{{ template.name }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+    <a href="{{ path('wh_admin_cms_bloc_create') }}" {{ Smart.modal() }} class="btn btn-lg btn-success pull-right" ><i class="fa fa-plus-square fa-lg"></i> Créer</a>
 {% endblock %}
 
 {% block subtitle %}> Liste{% endblock %}
@@ -35,8 +24,8 @@
         <th></th>
         <th>Nom</th>
         <th>Slug</th>
-        <th>Template</th>
-        <th>Vue</th>
+        <th>Backend Controller</th>
+        <th>Frontend Action</th>
         <th>Description</th>
     </tr>
     </thead>
@@ -50,8 +39,8 @@
             </td>
             <td>{{ entity.name }}</td>
             <td>{{ entity.slug }}</td>
-            <td>{{ entity.template.name }}</td>
-            <td>{{ entity.view }}</td>
+            <td>{{ entity.backendController }}</td>
+            <td>{{ entity.frontendAction }}</td>
             <td>{{ entity.description }}</td>
         </tr>
 

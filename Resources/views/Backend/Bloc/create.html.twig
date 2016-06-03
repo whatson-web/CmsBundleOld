@@ -6,13 +6,11 @@
 
 {% block body %}
 
-{{ form_start(form, {'action': path('wh_admin_cms_bloc_create', {'template' : template.id}), 'method': 'POST'}) }}
+{{ form_start(form, {'action': path('wh_admin_cms_bloc_create'), 'method': 'POST'}) }}
 
     <div class="padded">
 
         {% include('WHCmsBundle:Backend:Bloc/form.html.twig') %}
-        {{ form_row(form.Parent) }}
-        {{ form_row(form.Template) }}
 
     </div>
 

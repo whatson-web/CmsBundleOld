@@ -37,7 +37,7 @@ class LoadTemplate implements FixtureInterface
             'bloc-blog'   => array(
                 'type'              => 'bloc',
                 'name'              => 'Bloc blog',
-                'controllerAdmin'   => 'WHBlogBundle:Backend/Post',
+                'adminController'   => 'WHBlogBundle:Backend/Post',
                 'controller'        => 'WHBlogBundle:Bloc:view',
                 'blocs'             => array(
                     array(
@@ -51,7 +51,7 @@ class LoadTemplate implements FixtureInterface
             'bloc-medias'   => array(
                 'type'              => 'bloc',
                 'name'              => 'Bloc Medias',
-                'controllerAdmin'   => 'WHCmsBundle:Backend/MediaBloc',
+                'adminController'   => 'WHCmsBundle:Backend/MediaBloc',
                 'controller'        => 'WHCmsBundle:MediaBloc:view',
                 'blocs'             => array(
                     array(
@@ -65,7 +65,7 @@ class LoadTemplate implements FixtureInterface
             'bloc-pages'   => array(
                 'type'              => 'bloc',
                 'name'              => 'Bloc Page',
-                'controllerAdmin'   => 'WHCmsBundle:Backend/PageBloc',
+                'adminController'   => 'WHCmsBundle:Backend/PageBloc',
                 'controller'        => 'WHCmsBundle:PageBloc:view'
             ),
 

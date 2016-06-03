@@ -17,7 +17,9 @@ class BlocType extends AbstractType
         $builder
             ->add('name', 'text', array('label' => 'Nom : '))
             ->add('slug', 'text', array('label' => 'Nom technique : '))
-            ->add('view', 'text', array('label' => 'Nom de la vue : '))
+            ->add('backendController', 'text', array('label' => 'Controller admin : '))
+            ->add('frontendAction', 'text', array('label' => 'Action du render front offrice (APPCmsBundle:Bloc:MonBloc) : '))
+            ->add('view', 'text', array('label' => 'Vue du front (facultatif) : '))
             ->add('description', 'textarea', array('label' => 'Description : '))
         ;
     }
@@ -28,7 +30,8 @@ class BlocType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'WH\CmsBundle\Entity\Bloc'
+            'data_class' => 'WH\CmsBundle\Entity\Bloc',
+            'required' => false
         ));
     }
 

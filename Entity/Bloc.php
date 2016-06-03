@@ -47,6 +47,20 @@ class Bloc
     /**
      * @var string
      *
+     * @ORM\Column(name="backendController", type="string", length=255, nullable=true)
+     */
+    private $backendController;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="frontendAction", type="string", length=255, nullable=true)
+     */
+    private $frontendAction;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="view", type="string", length=255)
      */
     private $view;
@@ -263,4 +277,50 @@ class Bloc
         return $this->files;
     }
 
+
+    /**
+     * Set backendController
+     *
+     * @param string $backendController
+     * @return Bloc
+     */
+    public function setBackendController($backendController)
+    {
+        $this->backendController = $backendController;
+
+        return $this;
+    }
+
+    /**
+     * Get backendController
+     *
+     * @return string 
+     */
+    public function getBackendController()
+    {
+        return $this->backendController;
+    }
+
+    /**
+     * Set frontendAction
+     *
+     * @param string $frontendAction
+     * @return Bloc
+     */
+    public function setFrontendAction($frontendAction)
+    {
+        $this->frontendAction = $frontendAction;
+
+        return $this;
+    }
+
+    /**
+     * Get frontendAction
+     *
+     * @return string 
+     */
+    public function getFrontendAction()
+    {
+        return $this->frontendAction;
+    }
 }

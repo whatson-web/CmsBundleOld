@@ -13,9 +13,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Doctrine\Common\Collections;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-use APP\CmsBundle\Entity\Page;
-use WH\CmsBundle\Form\PageType;
-use WH\CmsBundle\Form\PageUpdateType;
+use WH\CmsBundle\Entity\Bloc;
+use WH\CmsBundle\Form\Backend\BlocType;
 
 use WH\CmsBundle\Controller\Backend\PageController as WHPageCtrl;
 
@@ -50,23 +49,44 @@ class BlocController extends Controller
     }
 
     /**
-     * @Route("/create/{template}", name="wh_admin_cms_bloc_create")
-     * @param $template
+     * @Route("/create", name="wh_admin_cms_bloc_create")
      * @param Request $request
-     * @ParamConverter("template", class="APPCmsBundle:Template")
      * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
      *
      */
-    public function createAction($template, Request $request)
+    public function createAction(Request $request)
     {
 
-        return $this->forward(
-            $template->getAdminController() . ':create',
-            array(
-                'template' => $template,
-                'request' => $request
-            )
-        );
+        $em = $this->getDoctrine()->getManager();
+
+        $Bloc = new Bloc();
+
+        $form = $this->createForm(new BlocType(), $Bloc);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+
+            $em->persist($Bloc);
+            $em->flush();
+
+            $response = new JsonResponse();
+
+            $response->setData(
+                array(
+                    'valid' => true,
+                    'redirect' => $this->generateUrl('wh_admin_cms_blocs')
+                )
+            );
+
+            return $response;
+
+
+        }
+
+        return $this->render('WHCmsBundle:Backend:Bloc/create.html.twig', array(
+            'form'     => $form->createView()
+        ));
 
     }
 
@@ -82,13 +102,25 @@ class BlocController extends Controller
     public function updateAction($Bloc, Request $request)
     {
 
-        return $this->forward(
-            $Bloc->getTemplate()->getAdminController() . ':update',
-            array(
-                'Bloc' => $Bloc,
-                'request' => $request
-            )
-        );
+        $em = $this->getDoctrine()->getManager();
+
+        $form = $this->createForm(new BlocType(), $Bloc);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+
+            $em->persist($Bloc);
+            $em->flush();
+
+            return $this->redirect($this->generateUrl('wh_admin_cms_blocs'));
+
+        }
+
+        return $this->render('WHCmsBundle:Backend:Bloc/update.html.twig', array(
+            'Bloc' => $Bloc,
+            'form' => $form->createView()
+        ));
 
     }
 
