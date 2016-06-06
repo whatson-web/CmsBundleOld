@@ -32,7 +32,6 @@ class CompanyExtension extends \Twig_Extension
 
         if(count($this->Company)) $this->Company = $this->Company[0];
 
-
     }
 
     public function getFunctions()
@@ -47,12 +46,10 @@ class CompanyExtension extends \Twig_Extension
 
         if(!$this->Company) return 'Compagny non connue ';
 
-        if(!isset($this->Company['Company_'.$field]) and !isset($this->Company['page_'.$field])) return 'Champ non connue';
-
         if(isset($this->Company['Company_'.$field])) return $this->Company['Company_'.$field];
         if(isset($this->Company['page_'.$field])) return $this->Company['page_'.$field];
 
-
+        return 'Champ non connue';
 
     }
 
