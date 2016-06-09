@@ -1,6 +1,6 @@
 <?php
 
-namespace WH\CmsBundle\Controller;
+namespace WH\CmsBundle\Controller\Front;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
