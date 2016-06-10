@@ -1,6 +1,6 @@
 <?php
 
-namespace WH\CmsBundle\Controller\Front;
+namespace WH\CmsBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
