@@ -4,9 +4,12 @@ namespace WH\CmsBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
- * @Route("/")
+ * Class PageController
+ *
+ * @package WH\CmsBundle\Controller
  */
 class PageController extends Controller
 {
@@ -14,10 +17,11 @@ class PageController extends Controller
     /**
      * @param string $url
      * @Route("/{url}", name="wh_front_cms_page", requirements={"url" = ".*"})
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
      */
-    public function viewAction($url)
+    public function viewAction($url, Request $request)
     {
 
         $em = $this->getDoctrine()->getManager();
@@ -33,16 +37,20 @@ class PageController extends Controller
 
         if ($page->getTemplate()->getController()) {
 
-            $response = $this->forward($page->getTemplate()->getController(), array(
-                'Page' => $page
-            ));
+            $response = $this->forward(
+                $page->getTemplate()->getController(),
+                array(
+                    'Page'    => $page,
+                    'request' => $request,
+                )
+            );
 
             return $response;
         }
 
         $path = $pageRepository->getPath($page);
 
-        $renderVars         = array();
+        $renderVars = array();
         $renderVars['Page'] = $page;
         $renderVars['path'] = $path;
 
