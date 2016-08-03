@@ -28,7 +28,14 @@ class PageController extends Controller
 
         $pageRepository = $em->getRepository('APPCmsBundle:Page');
 
-        $page = $pageRepository->findOneByUrl($url);
+	    $page = $pageRepository->get(
+	    	'one',
+		    array(
+		    	'conditions' => array(
+		    		'Page.url' => $url
+			    )
+		    )
+	    );
 
         if (!$page) {
 
