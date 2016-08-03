@@ -1,99 +1,112 @@
 <?php
+
 namespace WH\CmsBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class GenerateUrlCommand
+ *
+ * @package WH\CmsBundle\Command
+ */
 class GenerateUrlCommand extends ContainerAwareCommand
 {
-    protected function configure()
-    {
-        $this
-            ->setName('wh:page:generateUrl')
-            ->setDescription('Génère les urls de l’entité page selon l’arborescence')
-            ->addArgument('id', InputArgument::OPTIONAL, 'Id de la page parent')
-        ;
-    }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
-    {
+	protected function configure()
+	{
 
-        /*
-         * Mettre à jour l'entité en question
-         */
-        $id = $input->getArgument('id');
+		$this
+			->setName('wh:page:generateUrl')
+			->setDescription('Génère les urls de l\'entité page selon l\'arborescence')
+			->addArgument('id', InputArgument::OPTIONAL, 'Id de la page parent');
+	}
 
-        $em = $this->getContainer()->get('doctrine')->getManager();
+	/**
+	 * @param InputInterface  $input
+	 * @param OutputInterface $output
+	 *
+	 * @return bool|void
+	 */
+	protected function execute(InputInterface $input, OutputInterface $output)
+	{
 
-        $repo = $em->getRepository('APPCmsBundle:Page');
+		$container = $this->getContainer();
 
-        $Page = $repo->findOneById($id);
+		/*
+		 * Mettre à jour l'entité en question
+		 */
+		$id = $input->getArgument('id');
 
-        if(!$Page) return;
+		$em = $container->get('doctrine')->getManager();
 
-        $tplt = $Page->getTemplate();
+		$pageRepository = $em->getRepository('APPCmsBundle:Page');
 
-        if($tplt && $tplt->getSlug() == 'home') {
+		$page = $pageRepository->findOneById($id);
 
-            $Page->setUrl('');
+		if (!$page) {
+			return false;
+		}
 
-        }else{
+		$tplt = $page->getTemplate();
 
-            //Création de l'url :
-            $path = $repo->getPath($Page);
+		if ($tplt && $tplt->getSlug() == 'home') {
 
-            $url = '';
+			$page->setUrl('');
 
-            foreach($path as $v) {
+		} else {
 
-                $tplt = ($v->getTemplate()) ? $v->getTemplate()->getSlug() : '' ;
-                $slug = $v->getMySlug();
+			// Création de l'url :
+			$path = $pageRepository->getPath($page);
 
-                $url .= ($tplt == 'home') ? '' : $slug.'/';
+			$url = '';
 
-            }
+			foreach ($path as $v) {
 
-            if($url != $Page->getUrl()) $Page->setUrl($url);
+				$tplt = ($v->getTemplate()) ? $v->getTemplate()->getSlug() : '';
+				$slug = $v->getMySlug();
 
-            $em->persist($Page);
+				$url .= ($tplt == 'home') ? '' : $slug . '/';
+			}
 
+			if ($url != $page->getUrl()) {
+				$page->setUrl($url);
+			}
 
-            $output->writeln('<info>Création de ' . $url . '</info>');
+			$em->persist($page);
 
-            /*
-             * Mettre à jour de tous les enfants de l‘entitté
-             */
-            $Children = $repo->children($Page);
+			$output->writeln('<info>Création de ' . $url . '</info>');
 
-            foreach($Children as $P) {
+			/*
+			 * Mettre à jour de tous les enfants de l‘entitté
+			 */
+			$children = $pageRepository->children($page);
 
-                $path = $repo->getPath($P);
-                $url = '';
+			foreach ($children as $child) {
 
-                foreach($path as $v) {
+				$path = $pageRepository->getPath($child);
+				$url = '';
 
-                    $tplt = ($v->getTemplate()) ? $v->getTemplate()->getSlug() : '' ;
-                    $slug = $v->getMySlug();
+				foreach ($path as $v) {
 
-                    $url .= ($tplt == 'home') ? '' : $slug.'/';
+					$tplt = ($v->getTemplate()) ? $v->getTemplate()->getSlug() : '';
+					$slug = $v->getMySlug();
 
-                }
+					$url .= ($tplt == 'home') ? '' : $slug . '/';
+				}
 
-                $P->setUrl($url);
+				$child->setUrl($url);
 
-                $em->persist($P);
+				$em->persist($child);
 
-                $output->writeln('<info>Création de ' . $url . '</info>');
+				$output->writeln('<info>Création de ' . $url . '</info>');
+			}
+		}
 
-            }
+		$em->flush();
 
-        }
-
-        $em->flush();
-
-
-    }
+		return true;
+	}
 }
