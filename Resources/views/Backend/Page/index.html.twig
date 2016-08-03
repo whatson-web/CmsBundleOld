@@ -28,9 +28,9 @@
         {{ Smart.openBox('fa-sitemap', 'Plan du site') }}
 
             <div class="widget-body">
-
-                {{ render(controller('WHCmsBundle:Backend/Page:Menu')) }}
-
+                <div class="dd">
+                    {{ knp_menu_render('WHCmsBundle:Builder:treePages', {allow_safe_labels : true, template: '@WHSmartAdmin/KnpMenu/adminTree.html.twig'}) | raw }}
+                </div>
             </div>
 
         {{ Smart.closeBox() }}

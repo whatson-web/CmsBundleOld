@@ -1,6 +1,7 @@
 <?php
 
 namespace WH\CmsBundle\Model;
+
 use Gedmo\Tree\Entity\Repository\NestedTreeRepository;
 
 use Doctrine\ORM\EntityRepository;
@@ -14,277 +15,252 @@ use Doctrine\ORM\EntityRepository;
 class PageRepository extends NestedTreeRepository
 {
 
+	public function findForMenu($search = array())
+	{
 
-    public function findForMenu($search = array()) {
+		$qb = $this
+			->createQueryBuilder('a')
+			->select('a')
+			->leftjoin('a.menus', 'Menu')
+			->andWhere('a.status = :status')
+			->orderBy('a.lft', 'asc')
+			->setParameter('status', 'published');
 
-        $qb = $this
-            ->createQueryBuilder('a')
-            ->select('a')
-            ->leftjoin('a.menus', 'Menu')
-            ->andWhere('a.status = :status')
-            ->orderBy('a.lft', 'asc')
-            ->setParameter('status', 'published')
-        ;
+		//On y ajoute les conditions :
+		foreach ($search as $k => $v) {
 
+			switch ($k) {
 
-        //On y ajoute les conditions :
-        foreach($search as $k => $v) {
+				case 'Menu.slug' :
 
-            switch($k) {
+					$qb->andWhere('Menu.slug = :MenuSlug');
+					$qb->setParameter('MenuSlug', $v);
 
-                case 'Menu.slug' :
+					break;
 
-                    $qb->andWhere('Menu.slug = :MenuSlug');
-                    $qb->setParameter('MenuSlug', $v);
+				case 'menuPages' :
 
-                    break;
+					$qb->innerJoin('a.template', 'template', 'WITH', 'a.template = template.id');
+					$qb->andWhere('a.lft >=' . $v->getLft());
+					$qb->andWhere('a.rgt <=' . $v->getRgt());
 
-                case 'menuPages' :
+					break;
 
-                    $qb->innerJoin('a.template', 'template', 'WITH', 'a.template = template.id');
-                    $qb->andWhere('a.lft >=' . $v->getLft());
-                    $qb->andWhere('a.rgt <=' . $v->getRgt());
+			}
 
-                    break;
+		}
 
-            }
+		$res = $qb->getQuery();
 
-        }
+		//$res->useQueryCache(true);    // here
+		//$res->useResultCache(true);  // and here
+		//$res->setResultCacheLifetime(5);
 
+		return $res->getResult();
 
-        $res = $qb->getQuery();
+	}
 
-        //$res->useQueryCache(true);    // here
-        //$res->useResultCache(true);  // and here
-        //$res->setResultCacheLifetime(5);
+	public function getMenu()
+	{
 
+		return $this->getMenuQuery()->getResult();
 
-        return $res->getResult();
+	}
 
+	public function getMenuQuery()
+	{
 
+		$qb = $this
+			->createQueryBuilder('a')
+			->select('a')
+			->leftJoin('a.template', 'Tplt')
+			->addSelect('Tplt')
+			->orderBy('a.root, a.lft', 'ASC')
+			->getQuery();
 
+		return $qb;
 
-    }
+	}
 
-    public function getMenu() {
+	public function findOneByTemplate($TpltSlug, $admin = false)
+	{
 
-        return $this->getMenuQuery()->getResult();
+		$qb = $this
+			->createQueryBuilder('a')
+			->select('a')
+			->leftjoin('a.template', 't')
+			->andWhere('t.slug = :tpltSlug')
+			->setParameter('tpltSlug', $TpltSlug);
 
-    }
+		if (!$admin) {
 
-    public function getMenuQuery() {
+			$qb->andWhere('a.status = :status');
+			$qb->setParameter('status', 'published');
 
+		}
 
-        $qb = $this
-            ->createQueryBuilder('a')
-            ->select('a')
-            ->leftJoin('a.template', 'Tplt')
-            ->addSelect('Tplt')
-            ->orderBy('a.root, a.lft', 'ASC')
-            ->getQuery()
-        ;
+		$res = $qb->getQuery();
 
-        return $qb;
+		return $res->getOneOrNullResult();
 
-    }
+	}
 
+	public function queryByTemplate($TpltSlug, $admin = false)
+	{
 
-    public function findOneByTemplate($TpltSlug, $admin = false) {
+		$qb = $this
+			->createQueryBuilder('a')
+			->select('a')
+			->leftjoin('a.template', 't')
+			->andWhere('t.slug = :tpltSlug')
+			->orderBy('a.lft', 'ASC')
+			->setParameter('tpltSlug', $TpltSlug);
 
-        $qb = $this
-            ->createQueryBuilder('a')
-            ->select('a')
-            ->leftjoin('a.template', 't')
-            ->andWhere('t.slug = :tpltSlug')
-            ->setParameter('tpltSlug', $TpltSlug)
-        ;
+		if (!$admin) {
+			$qb
+				->andWhere('a.status = :status')
+				->setParameter('status', 'published');
+		}
 
-        if(!$admin) {
+		return $qb;
 
-            $qb->andWhere('a.status = :status');
-            $qb->setParameter('status', 'published');
+	}
 
-        }
+	public function findByTemplate($TpltSlug, $admin = false)
+	{
 
-        $res = $qb->getQuery();
+		$qb = $this->queryByTemplate($TpltSlug, $admin);
 
-        return $res->getOneOrNullResult();
+		$res = $qb->getQuery();
 
-    }
+		return $res->getResult();
 
-    public function queryByTemplate($TpltSlug, $admin = false) {
+	}
 
-        $qb = $this
-            ->createQueryBuilder('a')
-            ->select('a')
-            ->leftjoin('a.template', 't')
+	public function _getQuery()
+	{
 
-            ->andWhere('t.slug = :tpltSlug')
-            ->orderBy('a.lft', 'ASC')
+		return $this
+			->createQueryBuilder('Page')
+			->leftJoin('Page.template', 'Template')
+			->leftJoin('Page.parent', 'Parent')
+			->orderBy('Page.lft' , 'ASC');
 
-            ->setParameter('tpltSlug', $TpltSlug)
+	}
 
-        ;
+	public function get($type = 'all', $options = array(), $admin = false)
+	{
 
-        if(!$admin) {
-            $qb
-                ->andWhere('a.status = :status')
-                ->setParameter('status', 'published');
-        }
+		$qb = $this->_getQuery();
 
-        return $qb;
+		if (!$admin) {
 
-    }
+			$qb->andWhere('Page.status = :status');
+			$qb->setParameter('status', 'published');
+		}
 
+		foreach ($options as $key => $value) {
 
-    public function findByTemplate($TpltSlug, $admin = false) {
+			switch ($key) {
 
-        $qb = $this->queryByTemplate($TpltSlug, $admin);
+				case 'limit':
+					$qb->setMaxResults($value);
+					break;
 
-        $res = $qb->getQuery();
+				case 'order':
+					$qb->orderBy('Page.created', $value);
+					break;
 
-        return $res->getResult();
+				case 'conditions':
 
-    }
+					foreach ($value as $k => $v) {
 
-    public function _getQuery()
-    {
+						if (empty($v)) {
+							continue;
+						}
 
-        return $this
-            ->createQueryBuilder('Page')
-            ->leftJoin('Page.template', 'Template')
-            ->leftJoin('Page.parent', 'Parent')
-            ;
+						switch ($k) {
 
-    }
+							case 'Search' :
 
-    public function get($type = 'all', $options = array(), $admin = false)
-    {
+								$qb->orWhere('Page.body LIKE :search');
+								$qb->orWhere('Page.name LIKE :search');
+								$qb->orWhere('Page.title LIKE :search');
+								$qb->setParameter('search', '%' . $v . '%');
 
+								break;
 
-        $qb = $this->_getQuery();
+							default :
 
-        if (!$admin) {
+								$cond = preg_replace('#\.#', '', $k);
+								$cond = strtolower($cond);
 
-            $qb->andWhere('Page.status = :status');
-            $qb->setParameter('status', 'published');
-        }
+								$qb->andWhere($k . ' = :' . $cond);
+								$qb->setParameter($cond, $v);
 
+								break;
 
-        foreach ($options as $key => $value) {
+						}
 
-            switch ($key) {
+					}
 
-                case 'limit':
-                    $qb->setMaxResults($value);
-                    break;
+			}
 
-                case 'order':
-                    $qb->orderBy('Page.created', $value);
-                    break;
+		}
 
+		switch ($type) {
 
-                case 'conditions':
+			case 'query':
 
-                    foreach($value as $k => $v) {
+				return $qb;
 
-                        if(empty($v)) continue;
+				break;
 
-                        switch($k) {
+			case 'all':
 
-                            case 'Search' :
+				$qb->addSelect('Page')
+					->addSelect('Template')
+					->addSelect('Parent');
 
-                                $qb->orWhere('Page.body LIKE :search');
-                                $qb->orWhere('Page.name LIKE :search');
-                                $qb->orWhere('Page.title LIKE :search');
-                                $qb->setParameter('search', '%'.$v.'%');
+				return $qb->getQuery()->getResult();
 
-                                break;
+				break;
 
+			case 'one':
 
-                            default :
+				$qb->addSelect('Page')
+					->addSelect('Template')
+					->addSelect('Parent');
 
-                                $cond = preg_replace('#\.#', '', $k);
-                                $cond = strtolower($cond);
+				return $qb->getQuery()->getOneOrNullResult();
 
+				break;
 
-                                $qb->andWhere($k. ' = :'.$cond);
-                                $qb->setParameter($cond, $v);
+			case 'paginate':
 
-                                break;
+				$qb->addSelect('Page')
+					->addSelect('Template')
+					->addSelect('Parent')
+					->getQuery();
 
+				if (!empty($typeOptions['page'])) {
 
-                        }
+					$qb->setFirstResult(($typeOptions['page'] - 1) * $typeOptions['limit']);
+				}
 
+				if (!empty($typeOptions['limit'])) {
 
+					$qb->setMaxResults($typeOptions['limit']);
+				}
 
-                    }
+				return new Paginator($qb, true);
 
+				break;
 
+		}
 
+		return false;
 
-            }
-
-        }
-
-
-        switch ($type) {
-
-            case 'query':
-
-                return $qb;
-
-                break;
-
-            case 'all':
-
-                $qb->addSelect('Page')
-                    ->addSelect('Template')
-                    ->addSelect('Parent')
-                    ;
-
-                return $qb->getQuery()->getResult();
-
-                break;
-
-            case 'one':
-
-                $qb->addSelect('Page')
-                    ->addSelect('Template')
-                    ->addSelect('Parent')
-                    ;
-
-                return $qb->getQuery()->getOneOrNullResult();
-
-                break;
-
-            case 'paginate':
-
-
-                $qb->addSelect('Page')
-                    ->addSelect('Template')
-                    ->addSelect('Parent')
-                    ->getQuery();
-
-
-                if (!empty($typeOptions['page'])) {
-
-                    $qb->setFirstResult(($typeOptions['page'] - 1) * $typeOptions['limit']);
-                }
-
-                if (!empty($typeOptions['limit'])) {
-
-                    $qb->setMaxResults($typeOptions['limit']);
-                }
-
-                return new Paginator($qb, true);
-
-                break;
-
-        }
-
-        return false;
-
-    }
+	}
 
 }

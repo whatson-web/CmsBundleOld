@@ -2,6 +2,8 @@
 
 namespace WH\CmsBundle\Controller\Backend;
 
+use Doctrine\ORM\Query;
+use Gedmo\Translatable\TranslatableListener;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -25,400 +27,316 @@ use WH\CmsBundle\Controller\Backend\PageController as WHPageCtrl;
 class PageController extends Controller
 {
 
-    /**
-     * @Route("/{parentPageId}", name="wh_admin_cms_pages", requirements={"parentPageId" = "\d+"})
-     * @param $parentPageId
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function indexAction($parentPageId = 0)
-    {
+	/**
+	 * @Route("/{parentPageId}", name="wh_admin_cms_pages", requirements={"parentPageId" = "\d+"})
+	 * @param $parentPageId
+	 *
+	 * @return \Symfony\Component\HttpFoundation\Response
+	 */
+	public function indexAction($parentPageId = 0)
+	{
 
-        $em = $this->getDoctrine()->getManager();
+		$em = $this->getDoctrine()->getManager();
 
+		$APPCmsBundlePage = $em->getRepository('APPCmsBundle:Page');
 
-        $APPCmsBundlePage = $em->getRepository('APPCmsBundle:Page');
+		$APPCmsBundleTemplate = $em->getRepository('APPCmsBundle:Template');
 
-        $APPCmsBundleTemplate = $em->getRepository('APPCmsBundle:Template');
+		$parentPage = false;
+		$path = '';
+		$children = array();
 
-        $parentPage = false;
-        $path = '';
-        $children = array();
+		if ($parentPageId) {
 
-        if ($parentPageId) {
+			$parentPage = $APPCmsBundlePage->findOneById($parentPageId);
 
-            $parentPage = $APPCmsBundlePage->findOneById($parentPageId);
+			$children = $APPCmsBundlePage->children($parentPage, true);
 
-            $children = $APPCmsBundlePage->children($parentPage, true);
+			$tmpPath = $APPCmsBundlePage->getPath($parentPage);
 
-            $tmpPath = $APPCmsBundlePage->getPath($parentPage);
+			foreach ($tmpPath as $v) {
 
-            foreach ($tmpPath as $v) {
+				$path .= '<a href="' . $this->generateUrl(
+						'wh_admin_cms_pages',
+						array('parentPageId' => $v->getId())
+					) . '" style="color:#FFF;">' . $v->getName() . '</a> / ';
+			}
 
-                $path .= '<a href="' . $this->generateUrl(
-                        'wh_admin_cms_pages',
-                        array('parentPageId' => $v->getId())
-                    ) . '" style="color:#FFF;">' . $v->getName() . '</a> / ';
-            }
+			//Cherche l'accueil et les autres pages enfantes
+		} else {
 
-        //Cherche l'accueil et les autres pages enfantes
-        }else{
+			$children = array();
 
-            $children = array();
+			$home = $APPCmsBundlePage->findOneByTemplate('home', true);
 
-            $home = $APPCmsBundlePage->findOneByTemplate('home', true);
+			if ($home) {
 
-            if($home) {
+				$children[] = $home;
 
-                $children[] = $home;
+				$children = $children + $APPCmsBundlePage->getChildren();
 
-                $children = $children + $APPCmsBundlePage->getChildren();
+			}
+		}
 
-            }
+		$templates = $APPCmsBundleTemplate->findByType('page');
 
-        }
+		return $this->render(
+			'WHCmsBundle:Backend:Page/index.html.twig',
+			array(
+				'parentPage' => $parentPage,
+				'children'   => $children,
+				'path'       => $path,
+				'templates'  => $templates,
+			)
+		);
+	}
 
+	/**
+	 * @Route("/create/{template}", name="wh_admin_cms_page_create")
+	 * @param         $template
+	 * @param Request $request
+	 * @ParamConverter("template", class="APPCmsBundle:Template")
+	 *
+	 * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
+	 *
+	 */
+	public function createAction($template, Request $request)
+	{
 
-        $templates = $APPCmsBundleTemplate->findByType('page');
+		$em = $this->getDoctrine()->getManager();
 
-        return $this->render(
-            'WHCmsBundle:Backend:Page/index.html.twig',
-            array(
-                'parentPage'    => $parentPage,
-                'children'      => $children,
-                'path'          => $path,
-                'templates'     => $templates
-            )
-        );
+		$page = new Page();
 
-    }
+		$form = $this->createForm(new PageType(), $page);
 
-    /**
-     * @Route("/create/{template}", name="wh_admin_cms_page_create")
-     * @param $template
-     * @param Request $request
-     * @ParamConverter("template", class="APPCmsBundle:Template")
-     * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     *
-     */
-    public function createAction($template, Request $request)
-    {
+		$form->handleRequest($request);
 
-        $em = $this->getDoctrine()->getManager();
+		if ($form->isValid()) {
 
-        $page = new Page();
+			$page->setTemplate($template);
 
-        $form = $this->createForm(new PageType(), $page);
+			$em->persist($page);
+			$em->flush();
 
-        $form->handleRequest($request);
+			// Mise à jour des url
+			$application = new Application($this->get('kernel'));
+			$application->setAutoExit(false);
+			$input = new ArrayInput(array('command' => 'wh:page:generateUrl', 'id' => $page->getId()));
+			$application->run($input, new NullOutput());
 
-        if ($form->isValid()) {
+			$request->getSession()->getFlashBag()->add('success', 'Page créée');
 
-            $page->setTemplate($template);
+			$response = new JsonResponse();
 
-            $em->persist($page);
-            $em->flush();
+			if ($form->get('editer')->isClicked()) {
+
+				$url = $this->generateUrl('wh_admin_cms_page_update', array('page' => $page->getId()));
+			} else {
+
+				$url = $this->generateUrl('wh_admin_cms_pages');
+			}
 
-            // Mise à jour des url
-            $application = new Application($this->get('kernel'));
-            $application->setAutoExit(false);
-            $input = new ArrayInput(array('command' => 'wh:page:generateUrl', 'id' => $page->getId()));
-            $application->run($input, new NullOutput());
+			$response->setData(
+				array(
+					'valid'    => true,
+					'redirect' => $url,
+				)
+			);
+
+			return $response;
+
+		}
+
+		return $this->render(
+			'WHCmsBundle:Backend:Page/create.html.twig',
+			array(
+				'form'     => $form->createView(),
+				'template' => $template,
+			)
+		);
+	}
 
-            $request->getSession()->getFlashBag()->add('success', 'Page créée');
+	/**
+	 * @Route("/update/{page}", name="wh_admin_cms_page_update")
+	 * @param         $page
+	 * @ParamConverter("page", class="APPCmsBundle:Page")
+	 * @param Request $request
+	 *
+	 * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
+	 */
+	public function updateAction($page, Request $request)
+	{
+
+		if ($page->getTemplate()->getAdminController()) {
+
+			return $this->forward(
+				$page->getTemplate()->getAdminController() . ':updatePage',
+				array(
+					'page'    => $page,
+					'request' => $request,
+				)
+			);
+		}
 
-            $response = new JsonResponse();
+		$em = $this->getDoctrine()->getManager();
 
-            if ($form->get('editer')->isClicked()) {
+		$APPCmsBundlePage = $em->getRepository('APPCmsBundle:Page');
 
-                $url = $this->generateUrl('wh_admin_cms_page_update', array('page' => $page->getId()));
-            }else{
+		$form = $this->createForm(new PageUpdateType(), $page);
 
-                $url = $this->generateUrl('wh_admin_cms_pages');
-            }
+		$form->handleRequest($request);
 
-            $response->setData(
-                array(
-                    'valid' => true,
-                    'redirect' => $url
-                )
-            );
+		if ($form->isValid()) {
 
-            return $response;
+			$em->persist($page);
+			$em->flush();
 
+			// Mise à jour des url
+			$application = new Application($this->get('kernel'));
+			$application->setAutoExit(false);
+			$input = new ArrayInput(array('command' => 'wh:page:generateUrl', 'id' => $page->getId()));
+			$application->run($input, new NullOutput());
+
+			$request->getSession()->getFlashBag()->add('success', 'Page modifiée');
 
-        }
+			if ($form->get('save_and_stay')->isClicked()) {
 
-        return $this->render(
-            'WHCmsBundle:Backend:Page/create.html.twig',
-            array(
-                'form'      => $form->createView(),
-                'template'  => $template
-            )
-        );
+				return $this->redirect($this->generateUrl('wh_admin_cms_page_update', array('page' => $page->getId())));
+			}
 
-    }
+			return $this->redirect($this->generateUrl('wh_admin_cms_pages'));
 
-    /**
-     * @Route("/update/{page}", name="wh_admin_cms_page_update")
-     * @param $page
-     * @ParamConverter("page", class="APPCmsBundle:Page")
-     * @param Request $request
-     * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     */
-    public function updateAction($page, Request $request)
-    {
+		}
 
-        if ($page->getTemplate()->getAdminController()) {
+		$path = $APPCmsBundlePage->getPath($page);
 
-            return $this->forward(
-                $page->getTemplate()->getAdminController() . ':updatePage',
-                array(
-                    'page' => $page,
-                    'request' => $request
-                )
-            );
-        }
+		return $this->render(
+			'WHCmsBundle:Backend:Page/update.html.twig',
+			array(
+				'page' => $page,
+				'form' => $form->createView(),
+				'path' => $path,
+			)
+		);
+	}
 
-        $em = $this->getDoctrine()->getManager();
+	/**
+	 * @Route("/delete/{page}", name="wh_admin_cms_page_delete")
+	 * @param         $page
+	 * @ParamConverter("page", class="APPCmsBundle:Page")
+	 * @param Request $request
+	 *
+	 * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
+	 */
+	public function deleteAction($page, Request $request)
+	{
 
-        $APPCmsBundlePage = $em->getRepository('APPCmsBundle:Page');
+		if ($page->getTemplate() && $page->getTemplate()->getAdminController()) {
 
-        $form = $this->createForm(new PageUpdateType(), $page);
+			return $this->forward(
+				$page->getTemplate()->getAdminController() . ':adminDelete',
+				array(
+					'page'    => $page,
+					'request' => $request,
+				)
+			);
+		}
 
-        $form->handleRequest($request);
+		$em = $this->getDoctrine()->getManager();
 
-        if ($form->isValid()) {
+		$em->remove($page);
+		$em->flush();
 
-            $em->persist($page);
-            $em->flush();
+		$request->getSession()->getFlashBag()->add('success', 'Page supprimée');
 
-            // Mise à jour des url
-            $application = new Application($this->get('kernel'));
-            $application->setAutoExit(false);
-            $input = new ArrayInput(array('command' => 'wh:page:generateUrl', 'id' => $page->getId()));
-            $application->run($input, new NullOutput());
+		return $this->redirect($this->generateUrl('wh_admin_cms_pages'));
+	}
 
-            $request->getSession()->getFlashBag()->add('success', 'Page modifiée');
+	/**
+	 * @Route("/publish/{page}", name="wh_admin_cms_page_publish")
+	 * @param         $page
+	 * @ParamConverter("page", class="APPCmsBundle:Page")
+	 * @param Request $request
+	 *
+	 * @return RedirectResponse
+	 */
+	public function publishAction($page, Request $request)
+	{
 
-            if ($form->get('save_and_stay')->isClicked()) {
+		$em = $this->getDoctrine()->getManager();
 
-                return $this->redirect($this->generateUrl('wh_admin_cms_page_update', array('page' => $page->getId())));
-            }
+		$status = 'published';
+		$message = 'Page publiée';
 
-            return $this->redirect($this->generateUrl('wh_admin_cms_pages'));
+		if ($page->getStatus() == 'published') {
 
-        }
+			$status = 'draft';
+			$message = 'Page dépubliée';
+		}
 
-        $path = $APPCmsBundlePage->getPath($page);
+		$page->setStatus($status);
 
-        return $this->render(
-            'WHCmsBundle:Backend:Page/update.html.twig',
-            array(
-                'page' => $page,
-                'form' => $form->createView(),
-                'path' => $path
-            )
-        );
+		$em->persist($page);
+		$em->flush();
 
-    }
+		$request->getSession()->getFlashBag()->add('success', $message);
 
-    /**
-     * @Route("/delete/{page}", name="wh_admin_cms_page_delete")
-     * @param $page
-     * @ParamConverter("page", class="APPCmsBundle:Page")
-     * @param Request $request
-     * @return RedirectResponse|\Symfony\Component\HttpFoundation\Response
-     */
-    public function deleteAction($page, Request $request)
-    {
+		return $this->redirect($request->headers->get('referer'));
+	}
 
-        if ($page->getTemplate() && $page->getTemplate()->getAdminController()) {
+	/**
+	 * @Route("/order/{page}/{position}", name="wh_admin_cms_page_order")
+	 * @ParamConverter("page", class="APPCmsBundle:Page")
+	 * @return RedirectResponse
+	 *
+	 * @param         $page
+	 * @param         $position
+	 * @param Request $request
+	 */
+	public function orderAction($page, $position, Request $request)
+	{
 
-            return $this->forward(
-                $page->getTemplate()->getAdminController() . ':adminDelete',
-                array(
-                    'page' => $page,
-                    'request' => $request
-                )
-            );
-        }
+		$em = $this->getDoctrine()->getManager();
 
-        $em = $this->getDoctrine()->getManager();
+		$APPCmsBundlePage = $em->getRepository('APPCmsBundle:Page');
 
-        $em->remove($page);
-        $em->flush();
+		if ($position == 'up') {
 
-        $request->getSession()->getFlashBag()->add('success', 'Page supprimée');
+			$APPCmsBundlePage->moveUp($page, 1);
 
-        return $this->redirect($this->generateUrl('wh_admin_cms_pages'));
-    }
+		} else {
 
-    /**
-     * @Route("/publish/{page}", name="wh_admin_cms_page_publish")
-     * @param $page
-     * @ParamConverter("page", class="APPCmsBundle:Page")
-     * @param Request $request
-     * @return RedirectResponse
-     */
-    public function publishAction($page, Request $request)
-    {
+			$APPCmsBundlePage->moveDown($page, 1);
 
-        $em = $this->getDoctrine()->getManager();
+		}
 
-        $status = 'published';
-        $message = 'Page publiée';
+		$em->flush();
 
-        if ($page->getStatus() == 'published') {
+		$request->getSession()->getFlashBag()->add('success', 'Ordre modifié');
 
-            $status = 'draft';
-            $message = 'Page dépubliée';
-        }
+		return $this->redirect($request->headers->get('referer'));
+	}
 
-        $page->setStatus($status);
+	/**
+	 * @Route("/tree-recover", name="wh_admin_cms_page_treerecover")
+	 * @param Request $request
+	 *
+	 * @return RedirectResponse
+	 */
+	public function recoverAction(Request $request)
+	{
 
-        $em->persist($page);
-        $em->flush();
+		$em = $this->getDoctrine()->getManager();
 
-        $request->getSession()->getFlashBag()->add('success', $message);
+		$repo = $em->getRepository('APPCmsBundle:Page');
 
-        return $this->redirect($request->headers->get('referer'));
+		$repo->verify();
+		$repo->recover();
+		$em->flush();
 
-    }
+		$request->getSession()->getFlashBag()->add('success', 'Arbre reconstruit');
 
-    /**
-     * @Route("/order/{page}/{position}", name="wh_admin_cms_page_order")
-     * @ParamConverter("page", class="APPCmsBundle:Page")
-     * @return RedirectResponse
-     *
-     * @param         $page
-     * @param         $position
-     * @param Request $request
-     */
-    public function orderAction($page, $position, Request $request)
-    {
-
-
-        $em = $this->getDoctrine()->getManager();
-
-        $APPCmsBundlePage = $em->getRepository('APPCmsBundle:Page');
-
-        if ($position == 'up') {
-
-            $APPCmsBundlePage->moveUp($page, 1);
-
-        } else {
-
-            $APPCmsBundlePage->moveDown($page, 1);
-
-        }
-
-        $em->flush();
-
-        $request->getSession()->getFlashBag()->add('success', 'Ordre modifié');
-
-        return $this->redirect($request->headers->get('referer'));
-
-    }
-
-    /**
-     * Retourne le code HTML du menu
-     * @param Request $request
-     * @Route("/menu-tree", name="wh_admin_cms_page_menu")
-     * @return \Symfony\Component\HttpFoundation\Response
-     */
-    public function menuAction(Request $request)
-    {
-
-        $em = $this->getDoctrine()->getManager();
-
-        $repoPage = $em->getRepository('APPCmsBundle:Page');
-
-        $controller = $this;
-
-        $query = $repoPage->getMenuQuery();
-
-        $options = array(
-            'decorate' => true,
-            'rootOpen' => '<ol class="dd-list">',
-            'rootClose' => '</ol>',
-            'childOpen' => '<li class="dd-item">',
-            'childClose' => '</li>',
-            'nodeDecorator' => function ($node) use (&$controller) {
-
-                    $label = '';
-
-
-                    if ($node['status'] == 'draft') {
-                        $label = 'danger';
-                        $icon = 'fa-thumbs-o-down';
-                    } else {
-                        $label = 'success';
-                        $icon = 'fa-thumbs-o-up';
-                    }
-
-                    $return = '<div class="dd-handle">';
-
-                    $return .= '<div class="pull-right">';
-                    $return .= '<a href="' . $controller->generateUrl(
-                            'wh_admin_cms_page_publish',
-                            array('page' => $node['id'])
-                        ) . '" class="btn btn-' . $label . ' btn-xs"><i class="fa ' . $icon . '"></i></a> ';
-                    $return .= '<a href="' . $controller->generateUrl(
-                            'wh_admin_cms_page_update',
-                            array('page' => $node['id'])
-                        ) . '" class="btn btn-primary btn-xs "><i class="fa fa-edit"></i></a> ';
-                    $return .= '</div>';
-
-                    $return .= '<a href="' . $controller->generateUrl(
-                            'wh_admin_cms_pages',
-                            array('parentPageId' => $node['id'])
-                        ) . '">' . $node['name'] . '</a> ';
-                    $return .= '<span>- ' . $node['template']['name'] . '</span>';
-                    $return .= '<small><br /><a href="' . $controller->generateUrl(
-                            'wh_front_cms_page',
-                            array('url' => $node['url'])
-                        ) . '">' . $node['url'] . '</a></small>';
-
-                    $return .= '</div>';
-
-                    return $return;
-
-                }
-        );
-
-        $htmlTree = $repoPage->buildTree($query->getArrayResult(), $options);
-
-
-        return $this->render(
-            'WHCmsBundle:Backend:Page/menu.html.twig',
-            array(
-                'Pages' => $htmlTree
-            )
-        );
-
-    }
-
-    /**
-     * @Route("/tree-recover", name="wh_admin_cms_page_treerecover")
-     * @param Request $request
-     * @return RedirectResponse
-     */
-    public function recoverAction(Request $request)
-    {
-
-        $em = $this->getDoctrine()->getManager();
-
-        $repo = $em->getRepository('APPCmsBundle:Page');
-
-        $repo->verify();
-        $repo->recover();
-        $em->flush();
-
-        $request->getSession()->getFlashBag()->add('success', 'Arbre reconstruit');
-
-        return $this->redirect($request->headers->get('referer'));
-
-    }
-
+		return $this->redirect($request->headers->get('referer'));
+	}
 
 }
