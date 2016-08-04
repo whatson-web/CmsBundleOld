@@ -40,48 +40,51 @@ class Builder extends Controller
 
 		foreach ($pages as $page) {
 
-			$menu->addChild(
-				$page->getSlug(),
-				array(
-					'route'           => 'wh_front_cms_page',
-					'routeParameters' => array('url' => $page->getUrl()),
-					'label'           => $page->getName(),
-					'class'           => 'dropdown',
-					'attributes'      => array(
-						'name'         => $page->getName(),
-						'urlPublish'   => $this->generateUrl(
-							'wh_admin_cms_page_publish',
-							array(
-								'page' => $page->getId(),
-							)
-						),
-						'iconePublish' => ($page->getStatus() == 'publish') ? 'fa-thumbs-o-up' : 'fa-thumbs-o-down',
-						'classPublish' => ($page->getStatus() == 'publish') ? 'btn-success' : 'btn-danger',
-						'urlUpdate'    => $this->generateUrl(
-							'wh_admin_cms_page_update',
-							array(
-								'page' => $page->getId(),
-							)
-						),
-						'urlIndex'     => $this->generateUrl(
-							'wh_admin_cms_pages',
-							array(
-								'parentPageId' => $page->getId(),
-							)
-						),
-						'urlView'      => $this->generateUrl(
-							'wh_front_cms_page',
-							array(
-								'url' => $page->getUrl(),
-							)
-						),
-					),
-				)
-			);
+			if ($page->getLvl() == 0) {
 
-			if (count($page->getChildren()) > 0) {
+				$menu->addChild(
+					$page->getSlug(),
+					array(
+						'route'           => 'wh_front_cms_page',
+						'routeParameters' => array('url' => $page->getUrl()),
+						'label'           => $page->getName(),
+						'class'           => 'dropdown',
+						'attributes'      => array(
+							'name'         => $page->getName(),
+							'urlPublish'   => $this->generateUrl(
+								'wh_admin_cms_page_publish',
+								array(
+									'page' => $page->getId(),
+								)
+							),
+							'iconePublish' => ($page->getStatus() == 'published') ? 'fa-thumbs-o-up' : 'fa-thumbs-o-down',
+							'classPublish' => ($page->getStatus() == 'published') ? 'btn-success' : 'btn-danger',
+							'urlUpdate'    => $this->generateUrl(
+								'wh_admin_cms_page_update',
+								array(
+									'page' => $page->getId(),
+								)
+							),
+							'urlIndex'     => $this->generateUrl(
+								'wh_admin_cms_pages',
+								array(
+									'parentPageId' => $page->getId(),
+								)
+							),
+							'urlView'      => $this->generateUrl(
+								'wh_front_cms_page',
+								array(
+									'url' => $page->getUrl(),
+								)
+							),
+						),
+					)
+				);
 
-				$this->childrenTreePages($menu, $page->getSlug(), $page->getChildren());
+				if (count($page->getChildren()) > 0) {
+
+					$this->childrenTreePages($menu, $page->getSlug(), $page->getChildren());
+				}
 			}
 		}
 
