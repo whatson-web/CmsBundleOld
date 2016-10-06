@@ -167,7 +167,7 @@ class PageController extends Controller
 	public function updateAction($page, Request $request)
 	{
 
-		if ($page->getTemplate()->getAdminController()) {
+		if ($page->getTemplate()->getAdminController() && is_callable($page->getTemplate()->getController() . ':updatePage')) {
 
 			return $this->forward(
 				$page->getTemplate()->getAdminController() . ':updatePage',
@@ -231,7 +231,7 @@ class PageController extends Controller
 	public function deleteAction($page, Request $request)
 	{
 
-		if ($page->getTemplate() && $page->getTemplate()->getAdminController()) {
+		if ($page->getTemplate() && $page->getTemplate()->getAdminController() && is_callable($page->getTemplate()->getController() . ':adminDelete')) {
 
 			return $this->forward(
 				$page->getTemplate()->getAdminController() . ':adminDelete',
