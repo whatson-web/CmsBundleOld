@@ -239,30 +239,4 @@ class Template
         return $this->tplt;
     }
 
-
-
-    /**
-     * Set requette
-     *
-     * @param string $requette
-     * @return Template
-     */
-    public function setReq($req)
-    {
-        $this->req = $req;
-
-        return $this;
-    }
-
-    /**
-     * Get requette
-     *
-     * @return string
-     */
-    public function getReq()
-    {
-        return $this->req;
-    }
-
-
 }
