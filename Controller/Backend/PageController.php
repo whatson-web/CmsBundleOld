@@ -61,7 +61,6 @@ class PageController extends Controller
 						array('parentPageId' => $v->getId())
 					) . '" style="color:#FFF;">' . $v->getName() . '</a> / ';
 			}
-
 			//Cherche l'accueil et les autres pages enfantes
 		} else {
 
@@ -74,7 +73,6 @@ class PageController extends Controller
 				$children[] = $home;
 
 				$children = $children + $APPCmsBundlePage->getChildren();
-
 			}
 		}
 
@@ -144,7 +142,6 @@ class PageController extends Controller
 			);
 
 			return $response;
-
 		}
 
 		return $this->render(
@@ -166,8 +163,10 @@ class PageController extends Controller
 	 */
 	public function updateAction($page, Request $request)
 	{
-
-		if ($page->getTemplate()->getAdminController() && is_callable($page->getTemplate()->getController() . ':updatePage')) {
+		if ($page->getTemplate()->getAdminController() && is_callable(
+				$page->getTemplate()->getAdminController() . ':updatePage'
+			)
+		) {
 
 			return $this->forward(
 				$page->getTemplate()->getAdminController() . ':updatePage',
@@ -205,7 +204,6 @@ class PageController extends Controller
 			}
 
 			return $this->redirect($this->generateUrl('wh_admin_cms_pages'));
-
 		}
 
 		$path = $APPCmsBundlePage->getPath($page);
@@ -231,7 +229,10 @@ class PageController extends Controller
 	public function deleteAction($page, Request $request)
 	{
 
-		if ($page->getTemplate() && $page->getTemplate()->getAdminController() && is_callable($page->getTemplate()->getController() . ':adminDelete')) {
+		if ($page->getTemplate() && $page->getTemplate()->getAdminController() && is_callable(
+				$page->getTemplate()->getController() . ':adminDelete'
+			)
+		) {
 
 			return $this->forward(
 				$page->getTemplate()->getAdminController() . ':adminDelete',
@@ -303,11 +304,9 @@ class PageController extends Controller
 		if ($position == 'up') {
 
 			$APPCmsBundlePage->moveUp($page, 1);
-
 		} else {
 
 			$APPCmsBundlePage->moveDown($page, 1);
-
 		}
 
 		$em->flush();
