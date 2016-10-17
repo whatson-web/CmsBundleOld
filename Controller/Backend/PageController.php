@@ -163,10 +163,7 @@ class PageController extends Controller
 	 */
 	public function updateAction($page, Request $request)
 	{
-		if ($page->getTemplate()->getAdminController() && is_callable(
-				$page->getTemplate()->getAdminController() . ':updatePage'
-			)
-		) {
+		if ($page->getTemplate()->getAdminController()) {
 
 			return $this->forward(
 				$page->getTemplate()->getAdminController() . ':updatePage',
